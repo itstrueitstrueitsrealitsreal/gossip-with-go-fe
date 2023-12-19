@@ -7,7 +7,7 @@ type Props = {
     styled: boolean;
 };
 
-const BasicCommentList: React.FC<Props> = ({ styled }: Props) => {
+const BasicCommentList: React.FC<Props> = () => {
     const comments: Comment[] = [
         {
             body:
@@ -32,7 +32,7 @@ const BasicCommentList: React.FC<Props> = ({ styled }: Props) => {
     return (
         <ul>
             {comments.map((comment) => (
-                <CommentItem comment={comment} styled={styled} key="" />
+                <CommentItem comment={comment} key="" />
             ))}
         </ul>
     );

@@ -1,21 +1,10 @@
 import BasicCommentList from "../components/CommentList";
+import CommentItem from "../components/CommentItem";
 import { Button } from "@mui/material";
 import { Link } from "react-router-dom";
-import Typewriter from "typewriter-effect";
-
-import React, { useState } from "react";
+import React from "react";
 
 const BasicThreadView: React.FC = () => {
-    const [isShowButton, setIsShowButton] = useState(false);
-
-    const hideButton = () => {
-        setIsShowButton(false);
-    };
-
-    const showButton = () => {
-        setIsShowButton(true);
-    };
-
     return (
         <div style={{ width: "25vw", margin: "auto", textAlign: "center" }}>
             <h3>{"Inspirational Quotes"}</h3>
@@ -24,23 +13,19 @@ const BasicThreadView: React.FC = () => {
             <Link to="/">{`<- Back to threads`}</Link>
             <br />
             <br />
-
-            <Typewriter
-                onInit={(typewriter) => {
-                    hideButton();
-                    typewriter
-                        .changeDelay(80)
-                        .pauseFor(1500)
-                        .typeString("It's a little plain isn't it?")
-                        .callFunction(showButton)
-                        .start();
+            <CommentItem
+                comment={{
+                    body:
+                        "Any fool can write code that a computer can understand.\n" +
+                        "Good programmers write code that humans can understand.\n" +
+                        " ~ Martin Fowler",
+                    author: "Benedict",
+                    timestamp: new Date(2022, 10, 28, 10, 33, 30),
                 }}
-            />
-            {isShowButton && (
-                <Button variant="contained" color="primary" component={Link} to="/thread/1/styled">
-                    {"Yes"}
-                </Button>
-            )}
+            ></CommentItem>
+            <Button variant="contained" color="primary" component={Link} to="/thread/1/styled">
+                {"Post"}
+            </Button>
         </div>
     );
 };

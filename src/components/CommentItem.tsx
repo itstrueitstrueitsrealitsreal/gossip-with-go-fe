@@ -6,7 +6,6 @@ import { makeStyles } from "@mui/styles";
 
 type Props = {
     comment: Comment;
-    styled: boolean;
 };
 const useStyles = makeStyles(() => ({
     commentBody: {
@@ -22,31 +21,20 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const CommentItem: React.FC<Props> = ({ comment, styled }) => {
+const CommentItem: React.FC<Props> = ({ comment }) => {
     const classes = useStyles();
 
-    if (styled) {
-        return (
-            <Card className={classes.commentCard}>
-                <CardContent>
-                    <Typography variant="body2" color="textPrimary" className={classes.commentBody} component="p">
-                        {comment.body}
-                    </Typography>
-                    <Typography color="textSecondary" className={classes.metadata} gutterBottom>
-                        {"Posted by " + comment.author + " on " + comment.timestamp.toLocaleString()}
-                    </Typography>
-                </CardContent>
-            </Card>
-        );
-    }
-
-    // unstyled
     return (
-        <li className={classes.commentBody}>
-            {comment.body}
-            <br />
-            <em>{"posted by " + comment.author + " on " + comment.timestamp.toLocaleString()}</em>
-        </li>
+        <Card className={classes.commentCard}>
+            <CardContent>
+                <Typography variant="body2" color="textPrimary" className={classes.commentBody} component="p">
+                    {comment.body}
+                </Typography>
+                <Typography color="textSecondary" className={classes.metadata} gutterBottom>
+                    {"Posted by " + comment.author + " on " + comment.timestamp.toLocaleString()}
+                </Typography>
+            </CardContent>
+        </Card>
     );
 };
 
