@@ -1,9 +1,62 @@
 import BasicCommentList from "../components/CommentList";
 import Comment from "../types/Comment";
-import { Button, Card, CardContent, Typography } from "@mui/material";
+import { Button, Card, CardContent, Typography, ThemeProvider, createTheme, Box } from "@mui/material";
 import { Link } from "react-router-dom";
 import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
+
+const theme = createTheme({
+    palette: {
+        primary: {
+            main: "#1976d2",
+        },
+        secondary: {
+            main: "#f50057",
+        },
+    },
+    spacing: 8,
+    components: {
+        MuiCard: {
+            styleOverrides: {
+                root: {
+                    marginBottom: 16,
+                    borderRadius: 4,
+                    boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+                    backgroundColor: "#ffffff",
+                    width: "40vw", // Increase the width of the card
+                    justifyContent: "center", // Center the cards
+                },
+            },
+        },
+        MuiTypography: {
+            styleOverrides: {
+                root: {
+                    fontSize: 16,
+                    whiteSpace: "pre-wrap",
+                    paddingBottom: 8,
+                    color: "#333333", // Make the text more visible
+                },
+                body2: {
+                    color: "#888888",
+                },
+            },
+        },
+        MuiTextField: {
+            styleOverrides: {
+                root: {
+                    marginBottom: 16,
+                },
+            },
+        },
+        MuiButton: {
+            styleOverrides: {
+                root: {
+                    marginBottom: 16,
+                },
+            },
+        },
+    },
+});
 
 const BasicThreadView: React.FC = () => {
     function post() {
@@ -45,77 +98,91 @@ const BasicThreadView: React.FC = () => {
     ]);
     const [author, setAuthor] = useState("");
     return (
-        <div style={{ width: "25vw", margin: "auto", textAlign: "center" }}>
-            <Card style={{ margin: ".5rem" }}>
-                <CardContent>
-                    <Typography component="p">{"Viewing thread:"}</Typography>
-                    <Typography variant="h5" component="h5">
-                        {"Inspirational Quotes"}
-                    </Typography>
-                    <Typography color="textSecondary" gutterBottom>
-                        {"by Aiken"}
-                    </Typography>
-                    <Typography variant="body2" component="p">
-                        {'"The best way to predict the future is to invent it."'}
-                        <br />
-                        {"- Alan Kay"}
-                    </Typography>
-                </CardContent>
-            </Card>
+        <ThemeProvider theme={theme}>
+            <div
+                style={{
+                    width: "40vw",
+                    margin: "auto",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    paddingTop: "1rem",
+                }}
+            >
+                <Card variant="outlined">
+                    <CardContent>
+                        <Typography component="p">{"Viewing thread:"}</Typography>
+                        <Typography sx={{ fontSize: 30 }} variant="h1" component="h1" style={{ color: "#00ADD8" }}>
+                            {"Inspirational Quotes"}
+                        </Typography>
+                        <Typography color="textSecondary" gutterBottom>
+                            {"by Aiken"}
+                        </Typography>
+                        <Typography variant="body1" component="p">
+                            {'"The best way to predict the future is to invent it."'}
+                            <br />
+                            {"- Alan Kay"}
+                        </Typography>
+                    </CardContent>
+                </Card>
 
-            <BasicCommentList comments={comments} />
-            <Button
-                variant="contained"
-                color="secondary"
-                component={Link}
-                to="/"
-                style={{ flexDirection: "row", justifyContent: "center", marginTop: ".5rem", marginBottom: ".5rem" }}
-            >
-                {"Back to threads"}
-            </Button>
-            <br />
-            <TextField
-                id="standard-multiline-flexible"
-                multiline
-                maxRows={4}
-                placeholder="Type your comments here..."
-                variant="standard"
-                style={{ margin: ".5 rem" }}
-                sx={{ width: "100%" }}
-                value={inputComment}
-                onChange={(e) => setInputComment(e.target.value)}
-            />
-            <br />
-            <TextField
-                id="author"
-                label="Username"
-                placeholder="Username"
-                variant="standard"
-                style={{ margin: "auto", marginTop: ".5rem", marginBottom: ".5rem" }}
-                sx={{ width: "100%" }}
-                value={author}
-                onChange={(e) => setAuthor(e.target.value)}
-            />
-            <br />
-            <Button
-                variant="contained"
-                color="primary"
-                onClick={post}
-                style={{ flexDirection: "row", justifyContent: "center", marginTop: ".5rem" }}
-            >
-                {"Post"}
-            </Button>
-            <br />
-            <Button
-                variant="contained"
-                color="primary"
-                component={Link}
-                to="/thread/1/styled"
-                style={{ flexDirection: "row", justifyContent: "center", marginTop: ".5rem" }}
-            >
-                {"Go to example"}
-            </Button>
-        </div>
+                <BasicCommentList comments={comments} />
+                <Button
+                    variant="outlined"
+                    color="primary"
+                    component={Link}
+                    to="/"
+                    style={{
+                        flexDirection: "row",
+                        justifyContent: "center",
+                        marginTop: ".5rem",
+                        marginBottom: ".5rem",
+                    }}
+                >
+                    {"Back to threads"}
+                </Button>
+                <Box sx={{ marginBottom: "16px" }}>
+                    <TextField
+                        id="standard-multiline-flexible"
+                        multiline
+                        maxRows={4}
+                        placeholder="Type your comments here..."
+                        variant="standard"
+                        sx={{ width: "100%" }}
+                        value={inputComment}
+                        onChange={(e) => setInputComment(e.target.value)}
+                    />
+                </Box>
+                <Box sx={{ marginBottom: "16px" }}>
+                    <TextField
+                        id="author"
+                        label="Username"
+                        placeholder="Username"
+                        variant="standard"
+                        sx={{ width: "100%" }}
+                        value={author}
+                        onChange={(e) => setAuthor(e.target.value)}
+                    />
+                </Box>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={post}
+                    style={{ flexDirection: "row", justifyContent: "center" }}
+                >
+                    {"Post"}
+                </Button>
+                <br />
+                <Button
+                    variant="contained"
+                    color="primary"
+                    component={Link}
+                    to="/thread/1/styled"
+                    style={{ flexDirection: "row", justifyContent: "center", marginTop: ".5rem" }}
+                >
+                    {"Go to example"}
+                </Button>
+            </div>
+        </ThemeProvider>
     );
 };
 

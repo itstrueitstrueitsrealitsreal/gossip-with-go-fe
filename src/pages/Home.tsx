@@ -13,7 +13,7 @@ const Home: React.FC = () => {
                             .changeDelay(80)
                             .pauseFor(1500)
                             .typeString("Welcome to ")
-                            .typeString('<strong><span style="color: #29BEB0;">Gossip with Go!</span></strong>')
+                            .typeString('<strong><span style="color: #00ADD8;">Gossip with Go!</span></strong>')
                             .typeString(" Click on any of the threads below to get started.")
                             .start();
                     }}
