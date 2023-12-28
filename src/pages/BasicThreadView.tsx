@@ -1,6 +1,19 @@
 import BasicCommentList from "../components/CommentList";
 import Comment from "../types/Comment";
-import { Button, Card, CardContent, Typography, ThemeProvider, createTheme, Box } from "@mui/material";
+import {
+    Button,
+    Card,
+    CardContent,
+    Typography,
+    ThemeProvider,
+    createTheme,
+    Box,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions,
+} from "@mui/material";
 import { Link } from "react-router-dom";
 import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
@@ -62,18 +75,17 @@ const BasicThreadView: React.FC = () => {
     function post() {
         if (inputComment === "") {
             alert("The comment field is blank!");
+            handleClose();
             return;
         }
-        const confirmed = window.confirm("Post comment?");
-        if (confirmed) {
-            const newComment: Comment = {
-                body: inputComment,
-                author: author === "" ? "Anonymous" : author,
-                timestamp: new Date(),
-            };
-            setComments([...comments, newComment]);
-            setInputComment(""); // Clear the input field after posting
-        }
+        const newComment: Comment = {
+            body: inputComment,
+            author: author === "" ? "Anonymous" : author,
+            timestamp: new Date(),
+        };
+        setComments([...comments, newComment]);
+        handleClose();
+        setInputComment(""); // Clear the input field after posting
     }
     const [inputComment, setInputComment] = useState(""); // State to store the input value
     const [comments, setComments] = useState<Comment[]>([
@@ -97,6 +109,16 @@ const BasicThreadView: React.FC = () => {
         },
     ]);
     const [author, setAuthor] = useState("");
+    const [open, setOpen] = React.useState(false);
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
     return (
         <ThemeProvider theme={theme}>
             <div
@@ -166,11 +188,30 @@ const BasicThreadView: React.FC = () => {
                 <Button
                     variant="contained"
                     color="primary"
-                    onClick={post}
+                    onClick={handleClickOpen}
                     style={{ flexDirection: "row", justifyContent: "center" }}
                 >
                     {"Post"}
                 </Button>
+                <Dialog
+                    open={open}
+                    onClose={handleClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogTitle id="alert-dialog-title">{"Post comment?"}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            {"Are you sure you want to post this comment?"}
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose}>Cancel</Button>
+                        <Button onClick={post} autoFocus>
+                            Confirm
+                        </Button>
+                    </DialogActions>
+                </Dialog>
                 <br />
                 <Button
                     variant="contained"
