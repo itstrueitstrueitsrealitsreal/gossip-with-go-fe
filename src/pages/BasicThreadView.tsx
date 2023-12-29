@@ -146,7 +146,6 @@ const BasicThreadView: React.FC = () => {
                         </Typography>
                     </CardContent>
                 </Card>
-
                 <BasicCommentList comments={comments} />
                 <Button
                     variant="outlined"
@@ -199,18 +198,34 @@ const BasicThreadView: React.FC = () => {
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
                 >
-                    <DialogTitle id="alert-dialog-title">{"Post comment?"}</DialogTitle>
-                    <DialogContent>
-                        <DialogContentText id="alert-dialog-description">
-                            {"Are you sure you want to post this comment?"}
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleClose}>Cancel</Button>
-                        <Button onClick={post} autoFocus>
-                            Confirm
-                        </Button>
-                    </DialogActions>
+                    {inputComment ? (
+                        <>
+                            <DialogTitle id="alert-dialog-title">{"Post comment?"}</DialogTitle>
+                            <DialogContent>
+                                <DialogContentText id="alert-dialog-description">
+                                    {"Are you sure you want to post this comment?"}
+                                </DialogContentText>
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={handleClose}>Cancel</Button>
+                                <Button onClick={post} autoFocus>
+                                    Confirm
+                                </Button>
+                            </DialogActions>
+                        </>
+                    ) : (
+                        <>
+                            <DialogTitle id="alert-dialog-title">{"No comment to post"}</DialogTitle>
+                            <DialogContent>
+                                <DialogContentText id="alert-dialog-description">
+                                    {"Please enter a comment before posting."}
+                                </DialogContentText>
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={handleClose}>Close</Button>
+                            </DialogActions>
+                        </>
+                    )}
                 </Dialog>
                 <br />
                 <Button
