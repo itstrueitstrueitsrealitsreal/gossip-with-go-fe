@@ -18,6 +18,23 @@ import { Link } from "react-router-dom";
 import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
 
+declare module "@mui/material/styles" {
+    interface PaletteOptions {
+        ochre?: {
+            main: string;
+            light?: string;
+            dark?: string;
+            contrastText?: string;
+        };
+    }
+}
+
+declare module "@mui/material/Button" {
+    interface ButtonPropsColorOverrides {
+        ochre: true;
+    }
+}
+
 const theme = createTheme({
     palette: {
         primary: {
@@ -25,6 +42,12 @@ const theme = createTheme({
         },
         secondary: {
             main: "#f50057",
+        },
+        ochre: {
+            main: "#E3D026",
+            light: "#E9DB5D",
+            dark: "#A29415",
+            contrastText: "#242105",
         },
     },
     spacing: 8,
@@ -73,11 +96,6 @@ const theme = createTheme({
 
 const BasicThreadView: React.FC = () => {
     function post() {
-        if (inputComment === "") {
-            alert("The comment field is blank!");
-            handleClose();
-            return;
-        }
         const newComment: Comment = {
             body: inputComment,
             author: author === "" ? "Anonymous" : author,
@@ -147,48 +165,61 @@ const BasicThreadView: React.FC = () => {
                     </CardContent>
                 </Card>
                 <BasicCommentList comments={comments} />
-                <Button
+                <ThemeProvider theme={theme}>
+                    <Button
+                        variant="contained"
+                        color="ochre"
+                        component={Link}
+                        to="/"
+                        style={{
+                            flexDirection: "row",
+                            justifyContent: "center",
+                            marginTop: ".5rem",
+                            marginBottom: ".5rem",
+                        }}
+                    >
+                        {"Back to threads"}
+                    </Button>
+                </ThemeProvider>
+                <Card
                     variant="outlined"
-                    color="primary"
-                    component={Link}
-                    to="/"
                     style={{
-                        flexDirection: "row",
-                        justifyContent: "center",
-                        marginTop: ".5rem",
-                        marginBottom: ".5rem",
+                        width: "40vw",
+                        margin: "auto",
+                        marginTop: "16px",
+                        paddingTop: "16px",
+                        paddingBottom: "16px",
                     }}
                 >
-                    {"Back to threads"}
-                </Button>
-                <Box sx={{ marginBottom: "16px" }}>
-                    <TextField
-                        id="standard-multiline-flexible"
-                        multiline
-                        maxRows={4}
-                        placeholder="Type your comments here..."
-                        variant="standard"
-                        sx={{ width: "100%" }}
-                        value={inputComment}
-                        onChange={(e) => setInputComment(e.target.value)}
-                    />
-                </Box>
-                <Box sx={{ marginBottom: "16px" }}>
-                    <TextField
-                        id="author"
-                        label="Username"
-                        placeholder="Username"
-                        variant="standard"
-                        sx={{ width: "100%" }}
-                        value={author}
-                        onChange={(e) => setAuthor(e.target.value)}
-                    />
-                </Box>
+                    <Box sx={{ margin: "16px" }}>
+                        <TextField
+                            id="standard-multiline-flexible"
+                            multiline
+                            maxRows={4}
+                            placeholder="Type your comments here..."
+                            variant="standard"
+                            sx={{ width: "80%", padding: "8px" }}
+                            value={inputComment}
+                            onChange={(e) => setInputComment(e.target.value)}
+                        />
+                    </Box>
+                    <Box sx={{ margin: "16px" }}>
+                        <TextField
+                            id="author"
+                            label="Username"
+                            placeholder="Username"
+                            variant="standard"
+                            sx={{ width: "80%", padding: "8px" }}
+                            value={author}
+                            onChange={(e) => setAuthor(e.target.value)}
+                        />
+                    </Box>
+                </Card>
                 <Button
                     variant="contained"
                     color="primary"
                     onClick={handleClickOpen}
-                    style={{ flexDirection: "row", justifyContent: "center" }}
+                    style={{ flexDirection: "row", justifyContent: "center", marginTop: ".5rem" }}
                 >
                     {"Post"}
                 </Button>
@@ -200,13 +231,19 @@ const BasicThreadView: React.FC = () => {
                 >
                     {inputComment ? (
                         <>
-                            <DialogTitle id="alert-dialog-title">{"Post comment?"}</DialogTitle>
-                            <DialogContent>
+                            <DialogTitle id="alert-dialog-title" sx={{ padding: "1rem" }}>
+                                <Typography variant="body2" color="textPrimary" component="p">
+                                    {"Post comment?"}
+                                </Typography>
+                            </DialogTitle>
+                            <DialogContent sx={{ padding: "1rem" }}>
                                 <DialogContentText id="alert-dialog-description">
-                                    {"Are you sure you want to post this comment?"}
+                                    <Typography variant="body2" color="textPrimary" component="p">
+                                        {"Are you sure you want to post this comment?"}
+                                    </Typography>
                                 </DialogContentText>
                             </DialogContent>
-                            <DialogActions>
+                            <DialogActions sx={{ padding: "1rem" }}>
                                 <Button onClick={handleClose}>Cancel</Button>
                                 <Button onClick={post} autoFocus>
                                     Confirm
@@ -215,13 +252,17 @@ const BasicThreadView: React.FC = () => {
                         </>
                     ) : (
                         <>
-                            <DialogTitle id="alert-dialog-title">{"No comment to post"}</DialogTitle>
-                            <DialogContent>
+                            <DialogTitle id="alert-dialog-title" sx={{ padding: "1rem" }}>
+                                {"No comment to post"}
+                            </DialogTitle>
+                            <DialogContent sx={{ padding: "1rem" }}>
                                 <DialogContentText id="alert-dialog-description">
-                                    {"Please enter a comment before posting."}
+                                    <Typography variant="body2" color="textPrimary" component="p">
+                                        {"Please enter a comment before posting."}
+                                    </Typography>
                                 </DialogContentText>
                             </DialogContent>
-                            <DialogActions>
+                            <DialogActions sx={{ padding: "1rem" }}>
                                 <Button onClick={handleClose}>Close</Button>
                             </DialogActions>
                         </>

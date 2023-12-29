@@ -25,7 +25,7 @@ const BasicThreadList: React.FC = () => {
                             <Card variant="outlined">
                                 <CardContent>
                                     <Typography
-                                        sx={{ fontSize: 30, fontWeight: 400 }}
+                                        sx={{ fontSize: 30 }}
                                         variant="h1"
                                         component="h1"
                                         style={{ color: "#00ADD8" }}
