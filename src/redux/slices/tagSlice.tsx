@@ -1,6 +1,7 @@
 import { RootState } from "../store";
 import Tag from "../../types/Tag";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
 
 interface TagsState {
     tags: Tag[];
