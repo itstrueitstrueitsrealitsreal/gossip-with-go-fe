@@ -1,4 +1,6 @@
-export default interface Root {
+type Tag = {
     id: number;
     name: string;
-}
+};
+
+export default Tag;
