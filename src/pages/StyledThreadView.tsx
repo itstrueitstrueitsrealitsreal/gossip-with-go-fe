@@ -1,9 +1,8 @@
 import BasicCommentList from "../components/CommentList";
 import Comment from "../types/Comment";
 import { Button, Card, CardContent, Fade, Typography } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Typewriter from "typewriter-effect";
-
 import React, { useState } from "react";
 
 const comments: Comment[] = [
@@ -34,8 +33,11 @@ const StyledThreadView: React.FC = () => {
         setIsShowTips(true);
     };
 
+    const { id } = useParams();
+
     return (
         <div style={{ width: "30vw", margin: "auto" }}>
+            <Typography>{id}</Typography>
             <Typography style={{ padding: "1em 0" }}>
                 <Typewriter
                     onInit={(typewriter) => {

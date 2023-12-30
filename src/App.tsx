@@ -1,11 +1,13 @@
 import Home from "./pages/Home";
 import BasicThreadView from "./pages/BasicThreadView";
 import StyledThreadView from "./pages/StyledThreadView";
+import store from "./redux/store";
 import React from "react";
 import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { blue, orange } from "@mui/material/colors";
+import { Provider } from "react-redux";
 
 const theme = createTheme({
     palette: {
@@ -17,15 +19,17 @@ const theme = createTheme({
 const App: React.FC = () => {
     return (
         <div className="App">
-            <ThemeProvider theme={theme}>
-                <BrowserRouter>
-                    <Routes>
-                        <Route path="/thread/1" element={<BasicThreadView />} />
-                        <Route path="/thread/1/styled" element={<StyledThreadView />} />
-                        <Route path="/" element={<Home />} />
-                    </Routes>
-                </BrowserRouter>
-            </ThemeProvider>
+            <Provider store={store}>
+                <ThemeProvider theme={theme}>
+                    <BrowserRouter>
+                        <Routes>
+                            <Route path="/thread/:id" element={<BasicThreadView />} />
+                            <Route path="/thread/:id/styled" element={<StyledThreadView />} />
+                            <Route path="/" element={<Home />} />
+                        </Routes>
+                    </BrowserRouter>
+                </ThemeProvider>
+            </Provider>
         </div>
     );
 };

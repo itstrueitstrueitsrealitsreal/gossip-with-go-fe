@@ -5,28 +5,28 @@ import Typewriter from "typewriter-effect";
 const Home: React.FC = () => {
     const exampleProps = [
         {
-            threadId: 1,
+            id: 1,
             author: "Aiken",
             tag: "Inspirational",
             title: "Inspirational Quotes",
             content: "The best way to predict the future is to invent it.\n- Alan Kay",
         },
         {
-            threadId: 2,
+            id: 2,
             author: "Bella",
             tag: "Technology",
             title: "Latest Tech News",
             content: "Check out the latest tech news and updates!",
         },
         {
-            threadId: 3,
+            id: 3,
             author: "Charlie",
             tag: "Food",
             title: "Delicious Recipes",
             content: "Discover mouth-watering recipes to satisfy your taste buds.",
         },
         {
-            threadId: 4,
+            id: 4,
             author: "David",
             tag: "Travel",
             title: "Travel Destinations",

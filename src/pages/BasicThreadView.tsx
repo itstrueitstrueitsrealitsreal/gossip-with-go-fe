@@ -14,7 +14,7 @@ import {
     DialogContentText,
     DialogActions,
 } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
 
@@ -136,9 +136,11 @@ const BasicThreadView: React.FC = () => {
     const handleClose = () => {
         setOpen(false);
     };
+    const { id } = useParams();
 
     return (
         <ThemeProvider theme={theme}>
+            <Typography>{id}</Typography>
             <div
                 style={{
                     width: "40vw",

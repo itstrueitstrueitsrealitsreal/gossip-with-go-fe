@@ -1,5 +1,5 @@
 export default interface Root {
-    threadId: number;
+    id: number;
     author: string;
     tag: string;
     title: string;

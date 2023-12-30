@@ -34,7 +34,7 @@ const BasicThreadList: React.FC<ThreadListProps> = ({ threads }: ThreadListProps
             >
                 {threads.map((thread) => (
                     <li key="" style={{ listStyleType: "none" }}>
-                        <ThreadItem threadId={thread.threadId} title={thread.title} author={thread.author} />
+                        <ThreadItem threadId={thread.id} title={thread.title} author={thread.author} />
                     </li>
                 ))}
             </ul>
