@@ -8,7 +8,14 @@ interface TagsState {
 }
 
 const initialState: TagsState = {
-    tags: [],
+    tags: [
+        { name: "Discussion" },
+        { name: "Question" },
+        { name: "Looking for Advice" },
+        { name: "Meme" },
+        { name: "Misc" },
+        { name: "Poll" },
+    ],
 };
 
 export const tagSlice = createSlice({

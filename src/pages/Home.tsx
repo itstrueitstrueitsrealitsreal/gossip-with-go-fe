@@ -1,38 +1,11 @@
 import BasicThreadList from "../components/BasicThreadList";
+import { selectThreads } from "../redux/slices/threadSlice";
 import React from "react";
 import Typewriter from "typewriter-effect";
+import { useSelector } from "react-redux";
 
 const Home: React.FC = () => {
-    const exampleProps = [
-        {
-            id: 1,
-            author: "Aiken",
-            tag: "Inspirational",
-            title: "Inspirational Quotes",
-            content: "The best way to predict the future is to invent it.\n- Alan Kay",
-        },
-        {
-            id: 2,
-            author: "Bella",
-            tag: "Technology",
-            title: "Latest Tech News",
-            content: "Check out the latest tech news and updates!",
-        },
-        {
-            id: 3,
-            author: "Charlie",
-            tag: "Food",
-            title: "Delicious Recipes",
-            content: "Discover mouth-watering recipes to satisfy your taste buds.",
-        },
-        {
-            id: 4,
-            author: "David",
-            tag: "Travel",
-            title: "Travel Destinations",
-            content: "Explore the most beautiful travel destinations around the world.",
-        },
-    ];
+    const threads = useSelector(selectThreads);
 
     return (
         <>
@@ -55,7 +28,7 @@ const Home: React.FC = () => {
                 />
             </h3>
             <br />
-            <BasicThreadList threads={exampleProps} />
+            <BasicThreadList threads={threads} />
         </>
     );
 };

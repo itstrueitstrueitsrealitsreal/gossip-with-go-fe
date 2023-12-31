@@ -6,9 +6,11 @@ interface ThreadItemProps {
     threadId: number;
     title: string;
     author: string;
+    tag: string; // Add tag property to the interface
 }
 
-const ThreadItem: React.FC<ThreadItemProps> = ({ threadId, title, author }) => {
+const ThreadItem: React.FC<ThreadItemProps> = ({ threadId, title, author, tag }) => {
+    // Add tag to the destructured props
     return (
         <Box sx={{ width: "25vw", margin: "auto", textAlign: "center" }}>
             <ul style={{ listStyleType: "none", padding: 0, display: "flex", justifyContent: "center" }}>
@@ -36,6 +38,9 @@ const ThreadItem: React.FC<ThreadItemProps> = ({ threadId, title, author }) => {
                                     <br />
                                     <Typography color="textSecondary" gutterBottom>
                                         {`by ${author}`}
+                                    </Typography>
+                                    <Typography color="textSecondary" gutterBottom>
+                                        {`Tag: ${tag}`}
                                     </Typography>
                                 </CardContent>
                             </Card>
