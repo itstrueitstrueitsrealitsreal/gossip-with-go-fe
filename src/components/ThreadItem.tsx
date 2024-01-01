@@ -3,19 +3,19 @@ import { Link } from "react-router-dom";
 import { Box, Typography, Card, CardContent } from "@mui/material";
 
 interface ThreadItemProps {
-    threadId: number;
+    id: number;
     title: string;
     author: string;
     tag: string; // Add tag property to the interface
 }
 
-const ThreadItem: React.FC<ThreadItemProps> = ({ threadId, title, author, tag }) => {
+const ThreadItem: React.FC<ThreadItemProps> = ({ id, title, author, tag }) => {
     // Add tag to the destructured props
     return (
         <Box sx={{ width: "25vw", margin: "auto", textAlign: "center" }}>
             <ul style={{ listStyleType: "none", padding: 0, display: "flex", justifyContent: "center" }}>
                 <li>
-                    <Link to={`/thread/${threadId}`} style={{ textDecoration: "none" }}>
+                    <Link to={`/thread/${id}`} style={{ textDecoration: "none" }}>
                         <Card
                             sx={{
                                 marginTop: ".5rem",

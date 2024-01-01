@@ -275,7 +275,7 @@ const BasicThreadView: React.FC = () => {
                     variant="contained"
                     color="primary"
                     component={Link}
-                    to="/thread/1/styled"
+                    to={"/thread/" + id + "/styled"}
                     style={{ flexDirection: "row", justifyContent: "center", marginTop: ".5rem" }}
                 >
                     {"Go to example"}

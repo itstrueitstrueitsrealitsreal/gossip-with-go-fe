@@ -54,4 +54,8 @@ export const { addThread } = threadSlice.actions;
 
 export const selectThreads = (state: RootState) => state.threads.threads;
 
+export const selectThreadById = (state: RootState, id: number) => {
+    return state.threads.threads.find((thread) => thread.id === id);
+};
+
 export default threadSlice.reducer;

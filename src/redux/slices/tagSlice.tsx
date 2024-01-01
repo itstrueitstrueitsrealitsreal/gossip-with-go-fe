@@ -30,6 +30,6 @@ export const tagSlice = createSlice({
 
 export const { addTag } = tagSlice.actions;
 
-export const selectTags = (state: RootState) => state.tags;
+export const selectTags = (state: RootState) => state.tags.tags;
 
 export default tagSlice.reducer;

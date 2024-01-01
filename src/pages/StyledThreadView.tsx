@@ -1,6 +1,9 @@
 import BasicCommentList from "../components/CommentList";
 import { selectComments } from "../redux/slices/commentSlice";
-import { Button, Card, CardContent, Fade, Typography } from "@mui/material";
+import { selectThreadById } from "../redux/slices/threadSlice";
+import ThreadItem from "../components/ThreadItem";
+import { RootState } from "../redux/store"; // Import RootState type
+import { Button, Fade, Typography } from "@mui/material";
 import { Link, useParams } from "react-router-dom";
 import Typewriter from "typewriter-effect";
 import React, { useState } from "react";
@@ -9,11 +12,12 @@ import { useSelector } from "react-redux";
 const StyledThreadView: React.FC = () => {
     const [isShowTips, setIsShowTips] = useState(false);
     const comments = useSelector(selectComments);
+    const { id }: { id?: string } = useParams();
+
+    const thread = useSelector((state: RootState) => selectThreadById(state, id ? parseInt(id) : 0)); // Ensure id is of type number
     const showTips = () => {
         setIsShowTips(true);
     };
-
-    const { id } = useParams();
 
     return (
         <div style={{ width: "30vw", margin: "auto" }}>
@@ -37,22 +41,12 @@ const StyledThreadView: React.FC = () => {
                     {" docs to see what other components you can use!"}
                 </Typography>
             </Fade>
-            <Card>
-                <CardContent>
-                    <Typography component="p">{"Viewing thread:"}</Typography>
-                    <Typography variant="h5" component="h5">
-                        {"Inspirational Quotes"}
-                    </Typography>
-                    <Typography color="textSecondary" gutterBottom>
-                        {"by Aiken"}
-                    </Typography>
-                    <Typography variant="body2" component="p">
-                        {'"The best way to predict the future is to invent it."'}
-                        <br />
-                        {"- Alan Kay"}
-                    </Typography>
-                </CardContent>
-            </Card>
+            <ThreadItem
+                id={id ? parseInt(id) : 0}
+                title={thread?.title ?? ""}
+                author={thread?.author ?? ""}
+                tag={thread?.tag ?? ""}
+            />
 
             <BasicCommentList comments={comments} />
 

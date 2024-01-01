@@ -8,7 +8,6 @@ const store = configureStore({
         comments: commentsReducer,
         tags: tagsReducer,
         threads: threadsReducer,
-        // Add other reducers here if you have any
     },
 });
 
