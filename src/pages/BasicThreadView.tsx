@@ -8,16 +8,14 @@ import {
     Typography,
     ThemeProvider,
     createTheme,
-    Box,
     Dialog,
     DialogTitle,
     DialogContent,
-    DialogContentText,
     DialogActions,
+    TextField,
 } from "@mui/material";
 import { Link, useParams } from "react-router-dom";
 import React, { useState } from "react";
-import TextField from "@mui/material/TextField";
 import { useSelector, useDispatch } from "react-redux";
 
 declare module "@mui/material/styles" {
@@ -112,15 +110,26 @@ const BasicThreadView: React.FC = () => {
 
     const dispatch = useDispatch();
 
-    function post() {
+    const [error, setError] = useState<string>("");
+
+    function postComment() {
+        if (inputComment.trim() === "") {
+            // Set the error message if the comment is empty
+            setError("Please enter a non-empty comment.");
+            return;
+        }
+
         const newComment: Comment = {
             body: inputComment,
             author: author === "" ? "Anonymous" : author,
             timestamp: new Date(),
         };
-        dispatch(addComment(newComment)); // Dispatch action to add comment to store
+
+        dispatch(addComment(newComment));
         handleClose();
-        setInputComment(""); // Clear the input field after posting
+        setInputComment("");
+        // Clear the error message
+        setError("");
     }
 
     const { id } = useParams();
@@ -153,6 +162,55 @@ const BasicThreadView: React.FC = () => {
                         </Typography>
                     </CardContent>
                 </Card>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleClickOpen}
+                    style={{ flexDirection: "row", justifyContent: "center", marginTop: ".5rem" }}
+                >
+                    {"New Comment"}
+                </Button>
+                <Dialog
+                    open={open}
+                    onClose={handleClose}
+                    aria-labelledby="post-comment-dialog-title"
+                    aria-describedby="post-comment-dialog-description"
+                >
+                    <DialogTitle id="post-comment-dialog-title">{"Post Comment"}</DialogTitle>
+                    <DialogContent>
+                        {/* Display the error message */}
+                        {error && (
+                            <Typography variant="body2" color="error" component="p">
+                                {error}
+                            </Typography>
+                        )}
+
+                        <TextField
+                            margin="dense"
+                            label="Your Comment"
+                            type="text"
+                            fullWidth
+                            multiline
+                            rows={4}
+                            value={inputComment}
+                            onChange={(e) => setInputComment(e.target.value)}
+                        />
+                        <TextField
+                            margin="dense"
+                            label="Username"
+                            type="text"
+                            fullWidth
+                            value={author}
+                            onChange={(e) => setAuthor(e.target.value)}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose}>Cancel</Button>
+                        <Button onClick={postComment} color="primary">
+                            Post Comment
+                        </Button>
+                    </DialogActions>
+                </Dialog>
                 <BasicCommentList comments={comments} />
                 <ThemeProvider theme={theme}>
                     <Button
@@ -170,93 +228,6 @@ const BasicThreadView: React.FC = () => {
                         {"Back to threads"}
                     </Button>
                 </ThemeProvider>
-                <Card
-                    variant="outlined"
-                    style={{
-                        width: "40vw",
-                        margin: "auto",
-                        marginTop: "16px",
-                        paddingTop: "16px",
-                        paddingBottom: "16px",
-                    }}
-                >
-                    <Box sx={{ margin: "16px" }}>
-                        <TextField
-                            id="standard-multiline-flexible"
-                            multiline
-                            maxRows={4}
-                            placeholder="Type your comments here..."
-                            variant="standard"
-                            sx={{ width: "80%", padding: "8px" }}
-                            value={inputComment}
-                            onChange={(e) => setInputComment(e.target.value)}
-                        />
-                    </Box>
-                    <Box sx={{ margin: "16px" }}>
-                        <TextField
-                            id="author"
-                            label="Username"
-                            placeholder="Username"
-                            variant="standard"
-                            sx={{ width: "80%", padding: "8px" }}
-                            value={author}
-                            onChange={(e) => setAuthor(e.target.value)}
-                        />
-                    </Box>
-                </Card>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleClickOpen}
-                    style={{ flexDirection: "row", justifyContent: "center", marginTop: ".5rem" }}
-                >
-                    {"Post"}
-                </Button>
-                <Dialog
-                    open={open}
-                    onClose={handleClose}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                >
-                    {inputComment ? (
-                        <>
-                            <DialogTitle id="alert-dialog-title" sx={{ padding: "1rem" }}>
-                                <Typography variant="body2" color="textPrimary" component="p">
-                                    {"Post comment?"}
-                                </Typography>
-                            </DialogTitle>
-                            <DialogContent sx={{ padding: "1rem" }}>
-                                <DialogContentText id="alert-dialog-description">
-                                    <Typography variant="body2" color="textPrimary" component="p">
-                                        {"Are you sure you want to post this comment?"}
-                                    </Typography>
-                                </DialogContentText>
-                            </DialogContent>
-                            <DialogActions sx={{ padding: "1rem" }}>
-                                <Button onClick={handleClose}>Cancel</Button>
-                                <Button onClick={post} autoFocus>
-                                    Confirm
-                                </Button>
-                            </DialogActions>
-                        </>
-                    ) : (
-                        <>
-                            <DialogTitle id="alert-dialog-title" sx={{ padding: "1rem" }}>
-                                {"No comment to post"}
-                            </DialogTitle>
-                            <DialogContent sx={{ padding: "1rem" }}>
-                                <DialogContentText id="alert-dialog-description">
-                                    <Typography variant="body2" color="textPrimary" component="p">
-                                        {"Please enter a comment before posting."}
-                                    </Typography>
-                                </DialogContentText>
-                            </DialogContent>
-                            <DialogActions sx={{ padding: "1rem" }}>
-                                <Button onClick={handleClose}>Close</Button>
-                            </DialogActions>
-                        </>
-                    )}
-                </Dialog>
                 <br />
                 <Button
                     variant="contained"
