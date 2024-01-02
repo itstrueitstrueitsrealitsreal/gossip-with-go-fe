@@ -152,7 +152,7 @@ const BasicThreadList: React.FC<ThreadListProps> = ({ threads }: ThreadListProps
                             sx={{ marginBottom: "1rem" }}
                         >
                             <MenuItem value="" disabled>
-                                Filter by Tag
+                                Select a tag
                             </MenuItem>
                             {tags.map((tag) => (
                                 <MenuItem key={tag.name} value={tag.name}>
