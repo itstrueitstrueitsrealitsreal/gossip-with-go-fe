@@ -9,8 +9,11 @@
 import "../App.css";
 
 import ThreadItem from "./ThreadItem";
+import generateId from "./generateId";
 import Thread from "../types/Thread";
+import { addThread } from "../redux/slices/threadSlice";
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import {
     Typography,
     Button,
@@ -36,6 +39,7 @@ const BasicThreadList: React.FC<ThreadListProps> = ({ threads }: ThreadListProps
     const [newThreadAuthor, setNewThreadAuthor] = useState("");
     const [newThreadTag, setNewThreadTag] = useState("");
     const [error, setError] = useState("");
+    const dispatch = useDispatch();
 
     const handleOpen = () => {
         setOpen(true);
@@ -68,12 +72,15 @@ const BasicThreadList: React.FC<ThreadListProps> = ({ threads }: ThreadListProps
             return;
         }
 
-        // Logic to create a new thread with the content of `newThread`, `newThreadTitle`, `newThreadAuthor`, and `newThreadTag`
-        // You can add your implementation here
-        console.log("Creating new thread:", newThread);
-        console.log("Title:", newThreadTitle);
-        console.log("Author:", newThreadAuthor);
-        console.log("Tag:", newThreadTag);
+        const thread: Thread = {
+            id: generateId(), // generate a unique id
+            title: newThreadTitle,
+            content: newThread,
+            author: newThreadAuthor,
+            tag: newThreadTag,
+        };
+
+        dispatch(addThread(thread));
         handleClose();
     };
 

@@ -178,7 +178,6 @@ const BasicThreadView: React.FC = () => {
                 >
                     <DialogTitle id="post-comment-dialog-title">{"Post Comment"}</DialogTitle>
                     <DialogContent>
-                        {/* Display the error message */}
                         {error && (
                             <Typography variant="body2" color="error" component="p">
                                 {error}

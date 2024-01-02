@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Box, Typography, Card, CardContent } from "@mui/material";
 
 interface ThreadItemProps {
-    id: number;
+    id: string;
     title: string;
     author: string;
     tag: string; // Add tag property to the interface
