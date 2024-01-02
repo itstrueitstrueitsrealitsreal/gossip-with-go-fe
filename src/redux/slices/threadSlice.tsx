@@ -51,6 +51,27 @@ const initialState: ThreadsState = {
             title: "Favorite Movie Genre",
             content: "What is your favorite movie genre?",
         },
+        {
+            id: "7",
+            author: "Jack",
+            tag: "Discussion",
+            title: "Favorite Programming Language",
+            content: "What is your favorite programming language and why?",
+        },
+        {
+            id: "8",
+            author: "Lily",
+            tag: "Question",
+            title: "Inspirational Quotes",
+            content: "Share your favorite inspirational quotes!",
+        },
+        {
+            id: "9",
+            author: "Max",
+            tag: "Looking for Advice",
+            title: "Career Change",
+            content: "Any advice for someone considering a career change?",
+        },
     ],
 };
 
