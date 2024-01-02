@@ -1,5 +1,6 @@
 import BasicCommentList from "../components/CommentList";
 import Comment from "../types/Comment";
+import { selectComments, addComment } from "../redux/slices/commentSlice";
 import {
     Button,
     Card,
@@ -17,6 +18,7 @@ import {
 import { Link, useParams } from "react-router-dom";
 import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
+import { useSelector, useDispatch } from "react-redux";
 
 declare module "@mui/material/styles" {
     interface PaletteOptions {
@@ -95,37 +97,8 @@ const theme = createTheme({
 });
 
 const BasicThreadView: React.FC = () => {
-    function post() {
-        const newComment: Comment = {
-            body: inputComment,
-            author: author === "" ? "Anonymous" : author,
-            timestamp: new Date(),
-        };
-        setComments([...comments, newComment]);
-        handleClose();
-        setInputComment(""); // Clear the input field after posting
-    }
     const [inputComment, setInputComment] = useState(""); // State to store the input value
-    const [comments, setComments] = useState<Comment[]>([
-        {
-            body:
-                "Any fool can write code that a computer can understand.\n" +
-                "Good programmers write code that humans can understand.\n" +
-                " ~ Martin Fowler",
-            author: "Benedict",
-            timestamp: new Date(2022, 10, 28, 10, 33, 30),
-        },
-        {
-            body: "Code reuse is the Holy Grail of Software Engineering.\n" + " ~ Douglas Crockford",
-            author: "Casey",
-            timestamp: new Date(2022, 11, 1, 11, 11, 11),
-        },
-        {
-            body: "Nine people can't make a baby in a month.\n" + " ~ Fred Brooks",
-            author: "Duuet",
-            timestamp: new Date(2022, 11, 2, 10, 30, 0),
-        },
-    ]);
+    const comments = useSelector(selectComments);
     const [author, setAuthor] = useState("");
     const [open, setOpen] = React.useState(false);
 
@@ -136,6 +109,20 @@ const BasicThreadView: React.FC = () => {
     const handleClose = () => {
         setOpen(false);
     };
+
+    const dispatch = useDispatch();
+
+    function post() {
+        const newComment: Comment = {
+            body: inputComment,
+            author: author === "" ? "Anonymous" : author,
+            timestamp: new Date(),
+        };
+        dispatch(addComment(newComment)); // Dispatch action to add comment to store
+        handleClose();
+        setInputComment(""); // Clear the input field after posting
+    }
+
     const { id } = useParams();
 
     return (

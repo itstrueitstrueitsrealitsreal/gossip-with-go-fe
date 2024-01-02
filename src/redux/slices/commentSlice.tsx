@@ -1,6 +1,7 @@
 import { RootState } from "../store";
 import Comment from "../../types/Comment";
 import { createSlice } from "@reduxjs/toolkit";
+import { useDispatch } from "react-redux";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
 interface CommentsState {
@@ -35,7 +36,7 @@ const initialState: CommentsState = {
     ],
 };
 
-export const commentsSlice = createSlice({
+const commentsSlice = createSlice({
     name: "comments",
     initialState,
     reducers: {
@@ -45,8 +46,16 @@ export const commentsSlice = createSlice({
     },
 });
 
-const { reducer, actions } = commentsSlice;
+export const { addComment } = commentsSlice.actions;
 
-export default reducer;
-export const { addComment } = actions;
 export const selectComments = (state: RootState) => state.comments.comments;
+
+export const addCommentToStore = (comment: Comment) => {
+    // Use the useDispatch hook to get the dispatch function
+    const dispatch = useDispatch();
+
+    // Dispatch the addComment action to add the comment to the store
+    dispatch(addComment(comment));
+};
+
+export default commentsSlice.reducer;
