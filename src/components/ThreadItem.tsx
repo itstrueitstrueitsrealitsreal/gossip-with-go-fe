@@ -7,9 +7,10 @@ interface ThreadItemProps {
     title: string;
     author: string;
     tag: string; // Add tag property to the interface
+    content: string;
 }
 
-const ThreadItem: React.FC<ThreadItemProps> = ({ id, title, author, tag }) => {
+const ThreadItem: React.FC<ThreadItemProps> = ({ id, title, author, tag, content }) => {
     // Add tag to the destructured props
     return (
         <Box sx={{ width: "25vw", margin: "auto", textAlign: "center" }}>
@@ -24,26 +25,26 @@ const ThreadItem: React.FC<ThreadItemProps> = ({ id, title, author, tag }) => {
                                 borderRadius: "8px",
                                 width: "40vw",
                             }}
+                            variant="outlined"
                         >
-                            <Card variant="outlined">
-                                <CardContent>
-                                    <Typography
-                                        sx={{ fontSize: 30 }}
-                                        variant="h1"
-                                        component="h1"
-                                        style={{ color: "#00ADD8" }}
-                                    >
-                                        {title}
-                                    </Typography>
-                                    <br />
-                                    <Typography color="textSecondary" gutterBottom>
-                                        {`by ${author}`}
-                                    </Typography>
-                                    <Typography color="textSecondary" gutterBottom>
-                                        {`Tag: ${tag}`}
-                                    </Typography>
-                                </CardContent>
-                            </Card>
+                            <CardContent>
+                                <Typography
+                                    sx={{ fontSize: 30 }}
+                                    variant="h1"
+                                    component="h1"
+                                    style={{ color: "#00ADD8" }}
+                                >
+                                    {title}
+                                </Typography>
+                                <br />
+                                <Typography color="textSecondary" gutterBottom>
+                                    {`by ${author}`}
+                                </Typography>
+                                <Typography>{`${content}`}</Typography>
+                                <Typography color="textSecondary" gutterBottom>
+                                    {`Tag: ${tag}`}
+                                </Typography>
+                            </CardContent>
                         </Card>
                     </Link>
                 </li>

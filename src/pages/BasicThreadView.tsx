@@ -1,10 +1,11 @@
 import BasicCommentList from "../components/CommentList";
 import Comment from "../types/Comment";
 import { selectComments, addComment } from "../redux/slices/commentSlice";
+import { selectThreadById } from "../redux/slices/threadSlice";
+import ThreadItem from "../components/ThreadItem";
+import { RootState } from "../redux/store"; // Import RootState type
 import {
     Button,
-    Card,
-    CardContent,
     Typography,
     ThemeProvider,
     createTheme,
@@ -99,6 +100,9 @@ const BasicThreadView: React.FC = () => {
     const comments = useSelector(selectComments);
     const [author, setAuthor] = useState("");
     const [open, setOpen] = React.useState(false);
+    const { id }: { id?: string } = useParams();
+
+    const thread = useSelector((state: RootState) => selectThreadById(state, id ?? "")); // Ensure id is of type number
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -132,11 +136,8 @@ const BasicThreadView: React.FC = () => {
         setError("");
     }
 
-    const { id } = useParams();
-
     return (
         <ThemeProvider theme={theme}>
-            <Typography>{id}</Typography>
             <div
                 style={{
                     width: "40vw",
@@ -146,22 +147,13 @@ const BasicThreadView: React.FC = () => {
                     paddingTop: "1rem",
                 }}
             >
-                <Card variant="outlined">
-                    <CardContent>
-                        <Typography component="p">{"Viewing thread:"}</Typography>
-                        <Typography sx={{ fontSize: 30 }} variant="h1" component="h1" style={{ color: "#00ADD8" }}>
-                            {"Inspirational Quotes"}
-                        </Typography>
-                        <Typography color="textSecondary" gutterBottom>
-                            {"by Aiken"}
-                        </Typography>
-                        <Typography variant="body1" component="p">
-                            {'"The best way to predict the future is to invent it."'}
-                            <br />
-                            {"- Alan Kay"}
-                        </Typography>
-                    </CardContent>
-                </Card>
+                <ThreadItem
+                    id={id ?? ""}
+                    title={thread?.title ?? ""}
+                    author={thread?.author ?? ""}
+                    tag={thread?.tag ?? ""}
+                    content={thread?.content ?? ""}
+                />
                 <Button
                     variant="contained"
                     color="primary"

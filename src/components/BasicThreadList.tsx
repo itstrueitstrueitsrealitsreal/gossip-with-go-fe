@@ -112,7 +112,13 @@ const BasicThreadList: React.FC<ThreadListProps> = ({ threads }: ThreadListProps
             >
                 {threads.map((thread) => (
                     <li key={thread.id} style={{ listStyleType: "none" }}>
-                        <ThreadItem id={thread.id} title={thread.title} author={thread.author} tag={thread.tag} />
+                        <ThreadItem
+                            id={thread.id}
+                            title={thread.title}
+                            author={thread.author}
+                            tag={thread.tag}
+                            content={""}
+                        />
                     </li>
                 ))}
             </ul>

@@ -14,7 +14,7 @@ const StyledThreadView: React.FC = () => {
     const comments = useSelector(selectComments);
     const { id }: { id?: string } = useParams();
 
-    const thread = useSelector((state: RootState) => selectThreadById(state, id ?? "")); // Ensure id is of type number
+    const thread = useSelector((state: RootState) => selectThreadById(state, id ?? ""));
     const showTips = () => {
         setIsShowTips(true);
     };
@@ -46,6 +46,7 @@ const StyledThreadView: React.FC = () => {
                 title={thread?.title ?? ""}
                 author={thread?.author ?? ""}
                 tag={thread?.tag ?? ""}
+                content={thread?.content ?? ""}
             />
 
             <BasicCommentList comments={comments} />
