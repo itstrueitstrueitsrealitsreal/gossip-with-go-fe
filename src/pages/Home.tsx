@@ -30,7 +30,7 @@ const Home: React.FC = () => {
             </h3>
             <br />
             <BasicThreadList threads={threads} />
-            <AccountButton isLoggedIn={true} username={"Kenneth"} />
+            <AccountButton isLoggedIn={false} username={"Kenneth"} />
         </>
     );
 };

@@ -14,6 +14,9 @@ interface AccountButtonProps {
 
 const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, username }) => {
     const [open, setOpen] = useState(false);
+    const [loginUsername, setLoginUsername] = useState("");
+    const [loginPassword, setLoginPassword] = useState("");
+    const [loginError, setLoginError] = useState("");
 
     const handleOpen = () => {
         setOpen(true);
@@ -24,6 +27,11 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, username }) =
     };
 
     const handleLogin = () => {
+        if (loginUsername === "" || loginPassword === "") {
+            setLoginError("Username and password cannot be empty");
+            return;
+        }
+
         // Perform login logic here
     };
 
@@ -64,8 +72,23 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, username }) =
                         </div>
                     ) : (
                         <div>
-                            <TextField label="Username" />
-                            <TextField label="Password" type="password" />
+                            {loginError && <p style={{ color: "red" }}>{loginError}</p>}
+                            <TextField
+                                label="Username"
+                                margin="dense"
+                                type="text"
+                                fullWidth
+                                value={loginUsername}
+                                onChange={(e) => setLoginUsername(e.target.value)}
+                            />
+                            <TextField
+                                label="Password"
+                                type="password"
+                                margin="dense"
+                                fullWidth
+                                value={loginPassword}
+                                onChange={(e) => setLoginPassword(e.target.value)}
+                            />
                         </div>
                     )}
                 </DialogContent>
