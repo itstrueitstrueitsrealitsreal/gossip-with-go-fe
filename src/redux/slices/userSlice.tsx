@@ -1,15 +1,16 @@
 import { RootState } from "../store";
 import User from "../../types/User";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import bcrypt from "bcrypt";
 
 interface UsersState {
     users: User[];
 }
 
 const exampleUsers: User[] = [
-    { id: "1", username: "John", password: "password1" },
-    { id: "2", username: "Jane", password: "password2" },
-    { id: "3", username: "Alice", password: "password3" },
+    { id: "1", username: "John", password: bcrypt.hashSync("password1", 10) },
+    { id: "2", username: "Jane", password: bcrypt.hashSync("password2", 10) },
+    { id: "3", username: "Alice", password: bcrypt.hashSync("password3", 10) },
 ];
 
 const initialState: UsersState = {
