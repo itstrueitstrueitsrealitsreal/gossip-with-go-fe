@@ -3,6 +3,7 @@ import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
+import DialogActions from "@material-ui/core/DialogActions";
 import TextField from "@material-ui/core/TextField";
 import { createTheme, ThemeProvider } from "@material-ui/core/styles";
 
@@ -43,8 +44,8 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, username }) =
     });
 
     return (
-        <ThemeProvider theme={theme}>
-            <div style={{ marginBottom: "1rem" }}>
+        <div style={{ marginBottom: "1rem" }}>
+            <ThemeProvider theme={theme}>
                 <Button
                     variant="contained"
                     color="primary"
@@ -53,32 +54,39 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, username }) =
                 >
                     Account
                 </Button>
-                <Dialog open={open} onClose={handleClose}>
-                    <DialogTitle>{isLoggedIn ? "Account Information" : "Login / Register"}</DialogTitle>
-                    <DialogContent>
-                        {isLoggedIn ? (
-                            <div>
-                                <p>Username: {username}</p>
-                                <Button variant="contained" color="secondary" onClick={handleLogout}>
-                                    Logout
-                                </Button>
-                            </div>
-                        ) : (
-                            <div>
-                                <TextField label="Username" />
-                                <TextField label="Password" type="password" />
-                                <Button variant="contained" color="primary" onClick={handleLogin}>
-                                    Login
-                                </Button>
-                                <Button variant="contained" color="primary">
-                                    Register
-                                </Button>
-                            </div>
-                        )}
-                    </DialogContent>
-                </Dialog>
-            </div>
-        </ThemeProvider>
+            </ThemeProvider>
+            <Dialog open={open} onClose={handleClose}>
+                <DialogTitle>{isLoggedIn ? "Account Information" : "Login / Register"}</DialogTitle>
+                <DialogContent>
+                    {isLoggedIn ? (
+                        <div>
+                            <p>Logged in as: {username}</p>
+                        </div>
+                    ) : (
+                        <div>
+                            <TextField label="Username" />
+                            <TextField label="Password" type="password" />
+                        </div>
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    {isLoggedIn ? (
+                        <Button variant="text" color="secondary" onClick={handleLogout}>
+                            Logout
+                        </Button>
+                    ) : (
+                        <>
+                            <Button variant="text" color="primary" onClick={handleLogin}>
+                                Login
+                            </Button>
+                            <Button variant="text" color="primary">
+                                Register
+                            </Button>
+                        </>
+                    )}
+                </DialogActions>
+            </Dialog>
+        </div>
     );
 };
 
