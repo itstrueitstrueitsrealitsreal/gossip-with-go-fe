@@ -17,6 +17,11 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, username }) =
     const [loginUsername, setLoginUsername] = useState("");
     const [loginPassword, setLoginPassword] = useState("");
     const [loginError, setLoginError] = useState("");
+    const [registerUsername, setRegisterUsername] = useState("");
+    const [registerPassword, setRegisterPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [registerError, setRegisterError] = useState("");
+    const [registerDialogOpen, setRegisterDialogOpen] = useState(false);
 
     const handleOpen = () => {
         setOpen(true);
@@ -37,6 +42,28 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, username }) =
 
     const handleLogout = () => {
         // Perform logout logic here
+    };
+
+    const handleRegister = () => {
+        if (registerUsername === "" || registerPassword === "" || confirmPassword === "") {
+            setRegisterError("All fields are required");
+            return;
+        }
+
+        if (registerPassword !== confirmPassword) {
+            setRegisterError("Passwords do not match");
+            return;
+        }
+
+        // Perform registration logic here
+    };
+
+    const handleRegisterDialogOpen = () => {
+        setRegisterDialogOpen(true);
+    };
+
+    const handleRegisterDialogClose = () => {
+        setRegisterDialogOpen(false);
     };
 
     const theme = createTheme({
@@ -64,7 +91,7 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, username }) =
                 </Button>
             </ThemeProvider>
             <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>{isLoggedIn ? "Account Information" : "Login / Register"}</DialogTitle>
+                <DialogTitle>{isLoggedIn ? "Account Information" : "Login"}</DialogTitle>
                 <DialogContent>
                     {isLoggedIn ? (
                         <div>
@@ -92,21 +119,64 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, username }) =
                         </div>
                     )}
                 </DialogContent>
-                <DialogActions>
+                <DialogActions style={{ marginTop: "auto" }}>
                     {isLoggedIn ? (
                         <Button variant="text" color="secondary" onClick={handleLogout}>
                             Logout
                         </Button>
                     ) : (
                         <>
+                            {!isLoggedIn && (
+                                <div>
+                                    {registerError && <p style={{ color: "red" }}>{registerError}</p>}
+                                    <Button variant="text" color="primary" onClick={handleRegisterDialogOpen}>
+                                        Register
+                                    </Button>
+                                </div>
+                            )}
                             <Button variant="text" color="primary" onClick={handleLogin}>
                                 Login
                             </Button>
-                            <Button variant="text" color="primary">
-                                Register
-                            </Button>
                         </>
                     )}
+                </DialogActions>
+            </Dialog>
+            <Dialog open={registerDialogOpen} onClose={handleRegisterDialogClose}>
+                <DialogTitle>Register</DialogTitle>
+                <DialogContent>
+                    {registerError && <p style={{ color: "red" }}>{registerError}</p>}
+                    <TextField
+                        label="Username"
+                        margin="dense"
+                        type="text"
+                        fullWidth
+                        value={registerUsername}
+                        onChange={(e) => setRegisterUsername(e.target.value)}
+                    />
+                    <TextField
+                        label="Password"
+                        type="password"
+                        margin="dense"
+                        fullWidth
+                        value={registerPassword}
+                        onChange={(e) => setRegisterPassword(e.target.value)}
+                    />
+                    <TextField
+                        label="Confirm Password"
+                        type="password"
+                        margin="dense"
+                        fullWidth
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button variant="text" color="primary" onClick={handleRegister}>
+                        Register
+                    </Button>
+                    <Button variant="text" color="secondary" onClick={handleRegisterDialogClose}>
+                        Cancel
+                    </Button>
                 </DialogActions>
             </Dialog>
         </div>
