@@ -1,6 +1,7 @@
 import commentsReducer from "./slices/commentSlice";
 import tagsReducer from "./slices/tagSlice";
-import threadsReducer from "./slices/threadSlice"; // Adjust the path
+import threadsReducer from "./slices/threadSlice";
+import usersReducer from "./slices/userSlice";
 import { configureStore } from "@reduxjs/toolkit";
 
 const store = configureStore({
@@ -8,6 +9,7 @@ const store = configureStore({
         comments: commentsReducer,
         tags: tagsReducer,
         threads: threadsReducer,
+        users: usersReducer,
     },
 });
 
