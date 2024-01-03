@@ -1,4 +1,5 @@
 import BasicThreadList from "../components/BasicThreadList";
+import AccountButton from "../components/AccountButton";
 import { selectThreads } from "../redux/slices/threadSlice";
 import React from "react";
 import Typewriter from "typewriter-effect";
@@ -29,6 +30,7 @@ const Home: React.FC = () => {
             </h3>
             <br />
             <BasicThreadList threads={threads} />
+            <AccountButton isLoggedIn={true} username={"Kenneth"} />
         </>
     );
 };
