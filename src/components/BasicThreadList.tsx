@@ -4,7 +4,7 @@ import ThreadItem from "./ThreadItem";
 import generateId from "./generateId";
 import Thread from "../types/Thread";
 import User from "../types/User";
-import { addThread } from "../redux/slices/threadSlice";
+import { addThread, deleteThread } from "../redux/slices/threadSlice"; // Import deleteThread action
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import {
@@ -101,6 +101,14 @@ const BasicThreadList: React.FC<ThreadListProps> = ({ threads, isLoggedIn, user 
         handleClose();
     };
 
+    const handleDeleteThread = (threadId: string) => {
+        const threadToDelete = threads.find((thread) => thread.id === threadId);
+
+        if (threadToDelete && isLoggedIn && threadToDelete.author === user?.username) {
+            dispatch(deleteThread(threadId));
+        }
+    };
+
     const tags = [
         { name: "Discussion" },
         { name: "Question" },
@@ -188,6 +196,9 @@ const BasicThreadList: React.FC<ThreadListProps> = ({ threads, isLoggedIn, user 
                             author={thread.author}
                             tag={thread.tag}
                             content={""}
+                            onDelete={() => handleDeleteThread(thread.id)}
+                            loggedIn={isLoggedIn}
+                            loggedInUsername={user?.username ?? undefined}
                         />
                     </li>
                 ))

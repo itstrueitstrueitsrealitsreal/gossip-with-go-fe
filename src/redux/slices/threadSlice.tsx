@@ -82,10 +82,23 @@ export const threadSlice = createSlice({
         addThread: (state, action: PayloadAction<Thread>) => {
             state.threads.push(action.payload);
         },
+        editThread: (state, action: PayloadAction<Thread>) => {
+            const { id, ...updatedThread } = action.payload;
+            const threadIndex = state.threads.findIndex((thread) => thread.id === id);
+            if (threadIndex !== -1) {
+                state.threads[threadIndex] = { ...state.threads[threadIndex], ...updatedThread };
+            }
+        },
+        deleteThread: (state, action: PayloadAction<string>) => {
+            const threadIndex = state.threads.findIndex((thread) => thread.id === action.payload);
+            if (threadIndex !== -1) {
+                state.threads.splice(threadIndex, 1);
+            }
+        },
     },
 });
 
-export const { addThread } = threadSlice.actions;
+export const { addThread, editThread, deleteThread } = threadSlice.actions;
 
 export const selectThreads = (state: RootState) => state.threads.threads;
 

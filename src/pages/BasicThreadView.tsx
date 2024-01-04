@@ -1,9 +1,12 @@
 import BasicCommentList from "../components/CommentList";
 import Comment from "../types/Comment";
 import { selectComments, addComment } from "../redux/slices/commentSlice";
-import { selectThreadById } from "../redux/slices/threadSlice";
+import { deleteThread, selectThreadById, selectThreads } from "../redux/slices/threadSlice";
 import ThreadItem from "../components/ThreadItem";
 import { RootState } from "../redux/store"; // Import RootState type
+import generateId from "../components/generateId";
+import { selectIsLoggedIn, selectLoggedInUser } from "../redux/slices/userSlice";
+import Thread from "../types/Thread";
 import {
     Button,
     Typography,
@@ -100,7 +103,18 @@ const BasicThreadView: React.FC = () => {
     const comments = useSelector(selectComments);
     const [author, setAuthor] = useState("");
     const [open, setOpen] = React.useState(false);
+    const isLoggedIn = useSelector(selectIsLoggedIn);
+    const user = useSelector(selectLoggedInUser);
     const { id }: { id?: string } = useParams();
+    const threads: Thread[] = useSelector(selectThreads); // Declare the 'threads' variable and provide its type
+
+    const handleDeleteThread = (threadId: string) => {
+        const threadToDelete = threads.find((thread: Thread) => thread.id === threadId); // Specify the type of the 'thread' parameter
+
+        if (threadToDelete && isLoggedIn && threadToDelete.author === user?.username) {
+            dispatch(deleteThread(threadId));
+        }
+    };
 
     const thread = useSelector((state: RootState) => selectThreadById(state, id ?? "")); // Ensure id is of type number
 
@@ -124,6 +138,7 @@ const BasicThreadView: React.FC = () => {
         }
 
         const newComment: Comment = {
+            id: generateId(),
             body: inputComment,
             author: author === "" ? "Anonymous" : author,
             timestamp: new Date(),
@@ -153,6 +168,9 @@ const BasicThreadView: React.FC = () => {
                     author={thread?.author ?? ""}
                     tag={thread?.tag ?? ""}
                     content={thread?.content ?? ""}
+                    loggedIn={isLoggedIn}
+                    loggedInUsername={user?.username}
+                    onDelete={() => handleDeleteThread(id ?? "")}
                 />
                 <Button
                     variant="contained"

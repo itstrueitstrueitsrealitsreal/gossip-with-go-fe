@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Box, Typography, Card, CardContent } from "@mui/material";
+import { Box, Typography, Card, CardContent, Button } from "@mui/material";
 
 interface ThreadItemProps {
     id: string;
@@ -8,9 +8,21 @@ interface ThreadItemProps {
     author: string;
     tag: string; // Add tag property to the interface
     content: string;
+    loggedIn: boolean; // Add loggedIn property to the interface
+    loggedInUsername?: string; // Add loggedInUsername property to the interface
+    onDelete: () => void;
 }
 
-const ThreadItem: React.FC<ThreadItemProps> = ({ id, title, author, tag, content }) => {
+const ThreadItem: React.FC<ThreadItemProps> = ({
+    id,
+    title,
+    author,
+    tag,
+    content,
+    loggedIn,
+    loggedInUsername,
+    onDelete,
+}) => {
     // Add tag to the destructured props
     return (
         <Box sx={{ width: "25vw", margin: "auto", textAlign: "center" }}>
@@ -44,6 +56,13 @@ const ThreadItem: React.FC<ThreadItemProps> = ({ id, title, author, tag, content
                                 <Typography color="textSecondary" gutterBottom>
                                     {`Tag: ${tag}`}
                                 </Typography>
+                                {loggedIn && loggedInUsername === author && (
+                                    <Link to={`/`} style={{ textDecoration: "none" }}>
+                                        <Button variant="contained" color="error" onClick={onDelete}>
+                                            Delete Thread
+                                        </Button>
+                                    </Link>
+                                )}
                             </CardContent>
                         </Card>
                     </Link>

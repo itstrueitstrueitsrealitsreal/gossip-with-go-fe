@@ -1,18 +1,32 @@
 import BasicCommentList from "../components/CommentList";
 import { selectComments } from "../redux/slices/commentSlice";
-import { selectThreadById } from "../redux/slices/threadSlice";
+import { deleteThread, selectThreadById, selectThreads } from "../redux/slices/threadSlice";
 import ThreadItem from "../components/ThreadItem";
 import { RootState } from "../redux/store"; // Import RootState type
+import { selectIsLoggedIn, selectLoggedInUser } from "../redux/slices/userSlice";
+import Thread from "../types/Thread";
 import { Button, Fade, Typography } from "@mui/material";
 import { Link, useParams } from "react-router-dom";
 import Typewriter from "typewriter-effect";
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const StyledThreadView: React.FC = () => {
     const [isShowTips, setIsShowTips] = useState(false);
     const comments = useSelector(selectComments);
     const { id }: { id?: string } = useParams();
+    const isLoggedIn = useSelector(selectIsLoggedIn);
+    const user = useSelector(selectLoggedInUser);
+    const threads: Thread[] = useSelector(selectThreads); // Declare the 'threads' variable and provide its type
+    const dispatch = useDispatch();
+
+    const handleDeleteThread = (threadId: string) => {
+        const threadToDelete = threads.find((thread: Thread) => thread.id === threadId); // Specify the type of the 'thread' parameter
+
+        if (threadToDelete && isLoggedIn && threadToDelete.author === user?.username) {
+            dispatch(deleteThread(threadId));
+        }
+    };
 
     const thread = useSelector((state: RootState) => selectThreadById(state, id ?? ""));
     const showTips = () => {
@@ -47,6 +61,9 @@ const StyledThreadView: React.FC = () => {
                 author={thread?.author ?? ""}
                 tag={thread?.tag ?? ""}
                 content={thread?.content ?? ""}
+                loggedIn={isLoggedIn}
+                loggedInUsername={user?.username}
+                onDelete={() => handleDeleteThread(id ?? "")}
             />
 
             <BasicCommentList comments={comments} />

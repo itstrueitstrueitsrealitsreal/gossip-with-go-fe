@@ -19,6 +19,7 @@ const exampleUsers: User[] = [
     { id: "1", username: "John", password: hashPassword("password1") },
     { id: "2", username: "Jane", password: hashPassword("password2") },
     { id: "3", username: "Alice", password: hashPassword("password3") },
+    { id: "4", username: "Aiken", password: hashPassword("password4") },
 ];
 
 const initialState: UsersState = {
