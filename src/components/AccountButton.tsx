@@ -1,5 +1,7 @@
-import { loginUser, selectUser } from "../redux/slices/userSlice";
+import generateId from "./generateId";
+import { addUser, loginUser, selectUser, isUsernameTaken } from "../redux/slices/userSlice";
 import { RootState } from "../redux/store";
+import User from "../types/User";
 import React, { useState } from "react";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
@@ -27,6 +29,7 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, username }) =
     const [registerDialogOpen, setRegisterDialogOpen] = useState(false);
     const dispatch = useDispatch();
     const selectedUser = useSelector((state: RootState) => selectUser(state, loginUsername, loginPassword));
+    const isTaken = useSelector((state: RootState) => isUsernameTaken(state, registerUsername));
 
     const handleOpen = () => {
         setOpen(true);
@@ -38,35 +41,53 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, username }) =
 
     const handleLogin = () => {
         if (loginUsername === "" || loginPassword === "") {
-            setLoginError("Username and password cannot be empty");
+            setLoginError("Username and password cannot be empty!");
             return;
         }
 
-        if (selectedUser) {
+        // Find the user with the matching username and password
+        const user = selectedUser;
+
+        if (user) {
+            // Login successful, perform necessary actions
+            dispatch(loginUser(user));
             alert("Login successful");
-            dispatch(loginUser(selectedUser)); // Dispatch the loginUser action
-            // Additional logic you want to perform on successful login
         } else {
             setLoginError("Invalid username or password");
         }
     };
 
-    const handleLogout = () => {
-        // Perform logout logic here
-    };
-
     const handleRegister = () => {
         if (registerUsername === "" || registerPassword === "" || confirmPassword === "") {
-            setRegisterError("All fields are required");
+            setRegisterError("All fields are required!");
             return;
         }
 
         if (registerPassword !== confirmPassword) {
-            setRegisterError("Passwords do not match");
+            setRegisterError("Passwords do not match!");
             return;
         }
 
+        if (isTaken) {
+            setRegisterError("Username already exists!");
+            return;
+        }
+
+        const user: User = {
+            id: generateId(),
+            username: registerUsername,
+            password: registerPassword,
+        };
+
         // Perform registration logic here
+        dispatch(addUser(user));
+
+        // Perform additional logic on successful registration
+        alert("Registration successful.");
+    };
+
+    const handleLogout = () => {
+        // Perform logout logic here
     };
 
     const handleRegisterDialogOpen = () => {
@@ -139,7 +160,6 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, username }) =
                         <>
                             {!isLoggedIn && (
                                 <div>
-                                    {registerError && <p style={{ color: "red" }}>{registerError}</p>}
                                     <Button variant="text" color="primary" onClick={handleRegisterDialogOpen}>
                                         Register
                                     </Button>

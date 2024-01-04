@@ -28,6 +28,10 @@ export const usersSlice = createSlice({
     initialState,
     reducers: {
         addUser: (state, action: PayloadAction<User>) => {
+            const existingUser = state.users.find((user) => user.username === action.payload.username);
+            if (existingUser) {
+                return;
+            }
             state.users.push(action.payload);
         },
         removeUser: (state, action: PayloadAction<string>) => {
@@ -47,6 +51,12 @@ export const usersSlice = createSlice({
         },
     },
 });
+
+// Function to check if a username is already taken
+export const isUsernameTaken = (state: RootState, username: string): boolean => {
+    const users = selectUsers(state); // Assuming you have a selector to get the users
+    return users.some((user) => user.username === username);
+};
 
 export const { addUser, removeUser, loginUser } = usersSlice.actions;
 
