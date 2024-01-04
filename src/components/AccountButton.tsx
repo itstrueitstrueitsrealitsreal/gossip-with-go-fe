@@ -57,7 +57,7 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
             setOpen(false);
             alert("Login successful.");
         } else {
-            setLoginError("Invalid username or password");
+            setLoginError("Invalid username or password.");
         }
     };
 
@@ -115,7 +115,7 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
     const theme = createTheme({
         palette: {
             primary: {
-                main: "#1976d2",
+                main: "#2196f3",
             },
             secondary: {
                 main: "#f50057",
@@ -125,13 +125,17 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
     });
 
     return (
-        <div style={{ marginBottom: "1rem" }}>
+        <div>
             <ThemeProvider theme={theme}>
                 <Button
                     variant="contained"
                     color="primary"
                     onClick={handleOpen}
-                    style={{ flexDirection: "row", justifyContent: "center", marginTop: ".5rem" }}
+                    style={{
+                        flexDirection: "row",
+                        justifyContent: "center",
+                        marginTop: ".5rem",
+                    }}
                 >
                     Account
                 </Button>

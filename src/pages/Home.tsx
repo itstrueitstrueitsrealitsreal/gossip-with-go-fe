@@ -1,5 +1,4 @@
 import BasicThreadList from "../components/BasicThreadList";
-import AccountButton from "../components/AccountButton";
 import { selectThreads } from "../redux/slices/threadSlice";
 import { selectIsLoggedIn, selectLoggedInUser } from "../redux/slices/userSlice";
 import React from "react";
@@ -33,7 +32,6 @@ const Home: React.FC = () => {
             </h3>
             <br />
             <BasicThreadList isLoggedIn={isLoggedIn} user={user || undefined} threads={threads} />
-            <AccountButton isLoggedIn={isLoggedIn} user={user || undefined} />
         </>
     );
 };

@@ -2,6 +2,7 @@ import "../App.css";
 
 import ThreadItem from "./ThreadItem";
 import generateId from "./generateId";
+import AccountButton from "./AccountButton";
 import Thread from "../types/Thread";
 import User from "../types/User";
 import { addThread, deleteThread } from "../redux/slices/threadSlice"; // Import deleteThread action
@@ -182,6 +183,7 @@ const BasicThreadList: React.FC<ThreadListProps> = ({ threads, isLoggedIn, user 
                         <Button variant="contained" onClick={handleOpen}>
                             New Thread
                         </Button>
+                        <AccountButton isLoggedIn={isLoggedIn} user={user || undefined} />
                     </CardContent>
                 </Card>
             </ul>

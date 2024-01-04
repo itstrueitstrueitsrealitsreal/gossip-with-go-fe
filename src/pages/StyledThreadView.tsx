@@ -69,9 +69,7 @@ const StyledThreadView: React.FC = () => {
             <BasicCommentList comments={comments} />
 
             <Link to="/">
-                <Button variant="contained" color="secondary">
-                    {"Back to threads"}
-                </Button>
+                <Button variant="contained">{"Back to threads"}</Button>
             </Link>
         </div>
     );
