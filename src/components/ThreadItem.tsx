@@ -1,17 +1,37 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Box, Typography, Card, CardContent, Button } from "@mui/material";
+import { Box, Typography, Card, CardContent, Button, createTheme, ThemeProvider } from "@mui/material";
 
 interface ThreadItemProps {
     id: string;
     title: string;
     author: string;
-    tag: string; // Add tag property to the interface
+    tag: string;
     content: string;
-    loggedIn: boolean; // Add loggedIn property to the interface
-    loggedInUsername?: string; // Add loggedInUsername property to the interface
+    loggedIn: boolean;
+    loggedInUsername?: string;
     onDelete: () => void;
+    onEdit: () => void;
+    homepage: boolean;
 }
+
+const theme = createTheme({
+    palette: {
+        primary: {
+            main: "#1976d2",
+        },
+        secondary: {
+            main: "#f50057",
+        },
+        ochre: {
+            main: "#E3D026",
+            light: "#E9DB5D",
+            dark: "#A29415",
+            contrastText: "#242105",
+        },
+    },
+    spacing: 8,
+});
 
 const ThreadItem: React.FC<ThreadItemProps> = ({
     id,
@@ -22,9 +42,10 @@ const ThreadItem: React.FC<ThreadItemProps> = ({
     loggedIn,
     loggedInUsername,
     onDelete,
-}) => {
-    // Add tag to the destructured props
-    return (
+    onEdit,
+    homepage,
+}) => (
+    <ThemeProvider theme={theme}>
         <Box sx={{ width: "25vw", margin: "auto", textAlign: "center" }}>
             <ul style={{ listStyleType: "none", padding: 0, display: "flex", justifyContent: "center" }}>
                 <li>
@@ -56,10 +77,25 @@ const ThreadItem: React.FC<ThreadItemProps> = ({
                                 <Typography color="textSecondary" gutterBottom>
                                     {`Tag: ${tag}`}
                                 </Typography>
-                                {loggedIn && loggedInUsername === author && (
+                                {homepage && loggedIn && loggedInUsername === author && (
+                                    <>
+                                        <Link to={`/`} style={{ textDecoration: "none" }}>
+                                            <Button
+                                                variant="contained"
+                                                color="error"
+                                                onClick={onDelete}
+                                                sx={{ marginBottom: ".5rem" }}
+                                            >
+                                                Delete Thread
+                                            </Button>
+                                        </Link>
+                                        <br />
+                                    </>
+                                )}
+                                {homepage && loggedIn && loggedInUsername === author && (
                                     <Link to={`/`} style={{ textDecoration: "none" }}>
-                                        <Button variant="contained" color="error" onClick={onDelete}>
-                                            Delete Thread
+                                        <Button variant="contained" color="ochre" onClick={onEdit}>
+                                            Edit Thread
                                         </Button>
                                     </Link>
                                 )}
@@ -69,7 +105,7 @@ const ThreadItem: React.FC<ThreadItemProps> = ({
                 </li>
             </ul>
         </Box>
-    );
-};
+    </ThemeProvider>
+);
 
 export default ThreadItem;

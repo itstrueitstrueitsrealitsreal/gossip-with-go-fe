@@ -171,6 +171,8 @@ const BasicThreadView: React.FC = () => {
                     loggedIn={isLoggedIn}
                     loggedInUsername={user?.username}
                     onDelete={() => handleDeleteThread(id ?? "")}
+                    onEdit={() => {}}
+                    homepage={false}
                 />
                 <Button
                     variant="contained"
@@ -237,16 +239,6 @@ const BasicThreadView: React.FC = () => {
                         {"Back to threads"}
                     </Button>
                 </ThemeProvider>
-                <br />
-                <Button
-                    variant="contained"
-                    color="primary"
-                    component={Link}
-                    to={"/thread/" + id + "/styled"}
-                    style={{ flexDirection: "row", justifyContent: "center", marginTop: ".5rem" }}
-                >
-                    {"Go to example"}
-                </Button>
             </div>
         </ThemeProvider>
     );

@@ -5,7 +5,7 @@ import generateId from "./generateId";
 import AccountButton from "./AccountButton";
 import Thread from "../types/Thread";
 import User from "../types/User";
-import { addThread, deleteThread } from "../redux/slices/threadSlice"; // Import deleteThread action
+import { addThread, deleteThread, editThread } from "../redux/slices/threadSlice"; // Import deleteThread and editThread actions
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import {
@@ -58,6 +58,10 @@ const BasicThreadList: React.FC<ThreadListProps> = ({ threads, isLoggedIn, user 
     const [newThreadTag, setNewThreadTag] = useState("");
     const [error, setError] = useState("");
     const [selectedTag, setSelectedTag] = useState<string>("");
+    const [editThreadId, setEditThreadId] = useState<string>(""); // Track the id of the thread being edited
+    const [editThreadContent, setEditThreadContent] = useState<string>(""); // Track the content of the thread being edited
+    const [editThreadTitle, setEditThreadTitle] = useState<string>(""); // Track the title of the thread being edited
+    const [editThreadTag, setEditThreadTag] = useState<string>(""); // Track the tag of the thread being edited
     const dispatch = useDispatch();
 
     const handleOpen = () => {
@@ -67,6 +71,8 @@ const BasicThreadList: React.FC<ThreadListProps> = ({ threads, isLoggedIn, user 
     const handleClose = () => {
         setOpen(false);
         setError("");
+        setEditThreadId(""); // Reset the edit thread id
+        setEditThreadContent(""); // Reset the edit thread content
     };
 
     const handleNewThreadChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -108,6 +114,35 @@ const BasicThreadList: React.FC<ThreadListProps> = ({ threads, isLoggedIn, user 
         if (threadToDelete && isLoggedIn && threadToDelete.author === user?.username) {
             dispatch(deleteThread(threadId));
         }
+    };
+
+    const handleEditThread = () => {
+        if (editThreadContent === "" || !isLoggedIn || editThreadId === "" || editThreadTitle === "") {
+            setError("Please fill in all the required fields.");
+            return;
+        }
+
+        const editedThread: Thread = {
+            id: editThreadId,
+            title: editThreadTitle,
+            content: editThreadContent,
+            author: user?.username ?? "Anonymous",
+            tag: newThreadTag,
+        };
+
+        dispatch(editThread(editedThread));
+        setEditThreadId(""); // Reset the edit thread id
+        setEditThreadContent(""); // Reset the edit thread content
+        setEditThreadTitle(""); // Reset the edit thread title
+        setEditThreadTag(""); // Reset the edit thread tag
+        handleClose();
+    };
+
+    const handleEditButtonClick = (threadId: string, threadContent: string, threadTitle: string) => {
+        setEditThreadId(threadId);
+        setEditThreadContent(threadContent);
+        setEditThreadTitle(threadTitle);
+        setOpen(true);
     };
 
     const tags = [
@@ -199,8 +234,10 @@ const BasicThreadList: React.FC<ThreadListProps> = ({ threads, isLoggedIn, user 
                             tag={thread.tag}
                             content={""}
                             onDelete={() => handleDeleteThread(thread.id)}
+                            onEdit={() => handleEditButtonClick(thread.id, thread.content, thread.title)}
                             loggedIn={isLoggedIn}
                             loggedInUsername={user?.username ?? undefined}
+                            homepage={true}
                         />
                     </li>
                 ))
@@ -208,7 +245,7 @@ const BasicThreadList: React.FC<ThreadListProps> = ({ threads, isLoggedIn, user 
             <Dialog open={open} onClose={handleClose}>
                 {isLoggedIn ? (
                     <Dialog open={open} onClose={handleClose}>
-                        <DialogTitle>Create New Thread</DialogTitle>
+                        <DialogTitle>{editThreadId ? "Edit Thread" : "Create New Thread"}</DialogTitle>
                         <DialogContent>
                             {error && <Typography color="error">{error}</Typography>}
                             <TextField
@@ -216,8 +253,12 @@ const BasicThreadList: React.FC<ThreadListProps> = ({ threads, isLoggedIn, user 
                                 label="Title"
                                 type="text"
                                 fullWidth
-                                value={newThreadTitle}
-                                onChange={handleNewThreadTitleChange}
+                                value={editThreadTitle ? editThreadTitle : newThreadTitle}
+                                onChange={
+                                    editThreadId
+                                        ? (e) => setEditThreadTitle(e.target.value)
+                                        : handleNewThreadTitleChange
+                                }
                             />
                             <TextField
                                 autoFocus
@@ -225,11 +266,13 @@ const BasicThreadList: React.FC<ThreadListProps> = ({ threads, isLoggedIn, user 
                                 label="Thread Content"
                                 type="text"
                                 fullWidth
-                                value={newThread}
-                                onChange={handleNewThreadChange}
+                                value={editThreadId ? editThreadContent : newThread}
+                                onChange={
+                                    editThreadId ? (e) => setEditThreadContent(e.target.value) : handleNewThreadChange
+                                }
                             />
                             <Select
-                                value={newThreadTag}
+                                value={editThreadTag ? editThreadTag : newThreadTag}
                                 onChange={handleNewThreadTagChange}
                                 displayEmpty
                                 fullWidth
@@ -253,7 +296,11 @@ const BasicThreadList: React.FC<ThreadListProps> = ({ threads, isLoggedIn, user 
                         </DialogContent>
                         <DialogActions>
                             <Button onClick={handleClose}>Cancel</Button>
-                            <Button onClick={handleCreateThread}>Create</Button>
+                            {editThreadId ? (
+                                <Button onClick={handleEditThread}>Save</Button>
+                            ) : (
+                                <Button onClick={handleCreateThread}>Create</Button>
+                            )}
                         </DialogActions>
                     </Dialog>
                 ) : (
