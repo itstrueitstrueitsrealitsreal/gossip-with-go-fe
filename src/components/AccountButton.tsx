@@ -1,3 +1,5 @@
+import { loginUser, selectUser } from "../redux/slices/userSlice";
+import { RootState } from "../redux/store";
 import React, { useState } from "react";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
@@ -6,6 +8,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
 import TextField from "@material-ui/core/TextField";
 import { createTheme, ThemeProvider } from "@material-ui/core/styles";
+import { useDispatch, useSelector } from "react-redux";
 
 interface AccountButtonProps {
     isLoggedIn: boolean;
@@ -22,6 +25,8 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, username }) =
     const [confirmPassword, setConfirmPassword] = useState("");
     const [registerError, setRegisterError] = useState("");
     const [registerDialogOpen, setRegisterDialogOpen] = useState(false);
+    const dispatch = useDispatch();
+    const selectedUser = useSelector((state: RootState) => selectUser(state, loginUsername, loginPassword));
 
     const handleOpen = () => {
         setOpen(true);
@@ -37,7 +42,13 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, username }) =
             return;
         }
 
-        // Perform login logic here
+        if (selectedUser) {
+            alert("Login successful");
+            dispatch(loginUser(selectedUser)); // Dispatch the loginUser action
+            // Additional logic you want to perform on successful login
+        } else {
+            setLoginError("Invalid username or password");
+        }
     };
 
     const handleLogout = () => {
