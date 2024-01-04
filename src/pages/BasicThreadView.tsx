@@ -7,6 +7,7 @@ import { RootState } from "../redux/store"; // Import RootState type
 import generateId from "../components/generateId";
 import { selectIsLoggedIn, selectLoggedInUser } from "../redux/slices/userSlice";
 import Thread from "../types/Thread";
+import AccountButton from "../components/AccountButton";
 import {
     Button,
     Typography,
@@ -42,7 +43,7 @@ declare module "@mui/material/Button" {
 const theme = createTheme({
     palette: {
         primary: {
-            main: "#1976d2",
+            main: "#2196f3",
         },
         secondary: {
             main: "#f50057",
@@ -99,10 +100,9 @@ const theme = createTheme({
 });
 
 const BasicThreadView: React.FC = () => {
-    const [inputComment, setInputComment] = useState(""); // State to store the input value
+    const [inputComment, setInputComment] = useState("");
     const comments = useSelector(selectComments);
-    const [author, setAuthor] = useState("");
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
     const isLoggedIn = useSelector(selectIsLoggedIn);
     const user = useSelector(selectLoggedInUser);
     const { id }: { id?: string } = useParams();
@@ -132,7 +132,6 @@ const BasicThreadView: React.FC = () => {
 
     function postComment() {
         if (inputComment.trim() === "") {
-            // Set the error message if the comment is empty
             setError("Please enter a non-empty comment.");
             return;
         }
@@ -140,14 +139,13 @@ const BasicThreadView: React.FC = () => {
         const newComment: Comment = {
             id: generateId(),
             body: inputComment,
-            author: author === "" ? "Anonymous" : author,
+            author: user?.username ?? "",
             timestamp: new Date(),
         };
 
         dispatch(addComment(newComment));
         handleClose();
         setInputComment("");
-        // Clear the error message
         setError("");
     }
 
@@ -176,52 +174,66 @@ const BasicThreadView: React.FC = () => {
                 />
                 <Button
                     variant="contained"
-                    color="primary"
                     onClick={handleClickOpen}
-                    style={{ flexDirection: "row", justifyContent: "center", marginTop: ".5rem" }}
+                    style={{ flexDirection: "row", justifyContent: "center" }}
                 >
                     {"New Comment"}
                 </Button>
-                <Dialog
-                    open={open}
-                    onClose={handleClose}
-                    aria-labelledby="post-comment-dialog-title"
-                    aria-describedby="post-comment-dialog-description"
-                >
-                    <DialogTitle id="post-comment-dialog-title">{"Post Comment"}</DialogTitle>
-                    <DialogContent>
-                        {error && (
-                            <Typography variant="body2" color="error" component="p">
-                                {error}
-                            </Typography>
-                        )}
+                <AccountButton isLoggedIn={isLoggedIn} user={user || undefined} />
+                {isLoggedIn && user ? (
+                    <Dialog
+                        open={open}
+                        onClose={handleClose}
+                        aria-labelledby="post-comment-dialog-title"
+                        aria-describedby="post-comment-dialog-description"
+                        PaperProps={{
+                            style: {
+                                minWidth: "50vw",
+                            },
+                        }}
+                    >
+                        <DialogTitle id="post-comment-dialog-title">{"Post Comment"}</DialogTitle>
+                        <DialogContent>
+                            {error && (
+                                <Typography variant="body2" color="error" component="p">
+                                    {error}
+                                </Typography>
+                            )}
 
-                        <TextField
-                            margin="dense"
-                            label="Your Comment"
-                            type="text"
-                            fullWidth
-                            multiline
-                            rows={4}
-                            value={inputComment}
-                            onChange={(e) => setInputComment(e.target.value)}
-                        />
-                        <TextField
-                            margin="dense"
-                            label="Username"
-                            type="text"
-                            fullWidth
-                            value={author}
-                            onChange={(e) => setAuthor(e.target.value)}
-                        />
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleClose}>Cancel</Button>
-                        <Button onClick={postComment} color="primary">
-                            Post Comment
-                        </Button>
-                    </DialogActions>
-                </Dialog>
+                            <TextField
+                                margin="dense"
+                                label="Your Comment"
+                                type="text"
+                                fullWidth
+                                multiline
+                                rows={4}
+                                value={inputComment}
+                                onChange={(e) => setInputComment(e.target.value)}
+                            />
+                            <DialogContent>
+                                <Typography color="textSecondary" style={{ textAlign: "center" }}>
+                                    Posting as: {user?.username}
+                                </Typography>
+                            </DialogContent>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleClose}>Cancel</Button>
+                            <Button onClick={postComment} color="primary">
+                                Post Comment
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
+                ) : (
+                    <Dialog open={open} onClose={() => setOpen(false)}>
+                        <DialogTitle>Login Required</DialogTitle>
+                        <DialogContent>
+                            <Typography>Please login to create a new thread using the account button below.</Typography>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleClose}>Close</Button>
+                        </DialogActions>
+                    </Dialog>
+                )}
                 <BasicCommentList comments={comments} />
                 <ThemeProvider theme={theme}>
                     <Button
