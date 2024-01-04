@@ -101,6 +101,15 @@ const BasicThreadList: React.FC<ThreadListProps> = ({ threads }: ThreadListProps
     };
 
     const tags = [
+        { name: "Discussion" },
+        { name: "Question" },
+        { name: "Looking for Advice" },
+        { name: "Meme" },
+        { name: "Misc" },
+        { name: "Poll" },
+    ];
+
+    const filters = [
         { name: "All" },
         { name: "Discussion" },
         { name: "Question" },
@@ -154,7 +163,7 @@ const BasicThreadList: React.FC<ThreadListProps> = ({ threads }: ThreadListProps
                             <MenuItem value="" disabled>
                                 Select a tag
                             </MenuItem>
-                            {tags.map((tag) => (
+                            {filters.map((tag) => (
                                 <MenuItem key={tag.name} value={tag.name}>
                                     {tag.name}
                                 </MenuItem>

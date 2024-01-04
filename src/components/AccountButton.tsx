@@ -52,6 +52,9 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, username }) =
             // Login successful, perform necessary actions
             dispatch(loginUser(user));
             alert("Login successful");
+            setLoginUsername("");
+            setLoginPassword("");
+            setOpen(false);
         } else {
             setLoginError("Invalid username or password");
         }
@@ -82,8 +85,14 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, username }) =
         // Perform registration logic here
         dispatch(addUser(user));
 
+        // Reset registration-related fields
+        setRegisterUsername("");
+        setRegisterPassword("");
+        setConfirmPassword("");
+        setRegisterDialogOpen(false);
+
         // Perform additional logic on successful registration
-        alert("Registration successful.");
+        alert("Registration successful, proceed to login.");
     };
 
     const handleLogout = () => {
