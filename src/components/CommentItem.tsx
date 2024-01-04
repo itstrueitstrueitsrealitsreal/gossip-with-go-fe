@@ -1,11 +1,14 @@
 import Comment from "../types/Comment";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import React from "react";
-import { Card, CardContent, Typography } from "@mui/material";
+import { Button, Card, CardContent, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
 type Props = {
     comment: Comment;
+    onDelete: () => void;
+    loggedInUsername?: string;
+    loggedIn: boolean;
 };
 
 const theme = createTheme({
@@ -43,7 +46,7 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const CommentItem: React.FC<Props> = ({ comment }) => {
+const CommentItem: React.FC<Props> = ({ comment, onDelete, loggedIn, loggedInUsername }) => {
     const classes = useStyles();
 
     return (
@@ -56,6 +59,14 @@ const CommentItem: React.FC<Props> = ({ comment }) => {
                     <Typography color="textSecondary" className={classes.metadata} gutterBottom>
                         {"Posted by " + comment.author + " on " + comment.timestamp.toLocaleString()}
                     </Typography>
+                    {loggedIn && loggedInUsername === comment.author && (
+                        <>
+                            <Button variant="contained" color="error" onClick={onDelete} sx={{ marginBottom: ".5rem" }}>
+                                Delete comment
+                            </Button>
+                            <br />
+                        </>
+                    )}
                 </CardContent>
             </Card>
         </ThemeProvider>
