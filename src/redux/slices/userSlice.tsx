@@ -6,6 +6,8 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 
 interface UsersState {
     users: User[];
+    isLoggedIn: boolean;
+    loggedInUser: User | null;
 }
 
 // Helper function to hash the password
@@ -21,6 +23,8 @@ const exampleUsers: User[] = [
 
 const initialState: UsersState = {
     users: exampleUsers,
+    isLoggedIn: false,
+    loggedInUser: null,
 };
 
 export const usersSlice = createSlice({
@@ -38,16 +42,15 @@ export const usersSlice = createSlice({
             state.users = state.users.filter((user) => user.id !== action.payload);
         },
         loginUser: (state, action: PayloadAction<User>) => {
-            alert(
-                "Successfully logged in as " +
-                    action.payload.username +
-                    ", id: " +
-                    action.payload.id +
-                    " state: " +
-                    state,
-            );
+            state.isLoggedIn = true;
+            state.loggedInUser = action.payload;
             // You can perform additional actions when a user logs in
             // For example, update some state indicating that the user is logged in
+        },
+        logoutUser: (state) => {
+            state.isLoggedIn = false;
+            state.loggedInUser = null;
+            // Perform additional actions when a user logs out
         },
     },
 });
@@ -58,7 +61,7 @@ export const isUsernameTaken = (state: RootState, username: string): boolean => 
     return users.some((user) => user.username === username);
 };
 
-export const { addUser, removeUser, loginUser } = usersSlice.actions;
+export const { addUser, removeUser, loginUser, logoutUser } = usersSlice.actions;
 
 export const selectUsers = (state: RootState) => state.users.users;
 
@@ -67,5 +70,9 @@ export const selectUser = (state: RootState, username: string, password: string)
 
     return state.users.users.find((user) => user.username === username && user.password === hashedPassword);
 };
+
+export const selectIsLoggedIn = (state: RootState) => state.users.isLoggedIn;
+
+export const selectLoggedInUser = (state: RootState) => state.users.loggedInUser;
 
 export default usersSlice.reducer;

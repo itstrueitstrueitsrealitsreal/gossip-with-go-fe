@@ -3,6 +3,7 @@ import "../App.css";
 import ThreadItem from "./ThreadItem";
 import generateId from "./generateId";
 import Thread from "../types/Thread";
+import User from "../types/User";
 import { addThread } from "../redux/slices/threadSlice";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
@@ -25,6 +26,8 @@ import {
 
 interface ThreadListProps {
     threads: Thread[];
+    isLoggedIn: boolean;
+    user?: User;
 }
 
 const NoThreadsComponent: React.FC = () => {
@@ -47,11 +50,10 @@ const NoThreadsComponent: React.FC = () => {
     );
 };
 
-const BasicThreadList: React.FC<ThreadListProps> = ({ threads }: ThreadListProps) => {
+const BasicThreadList: React.FC<ThreadListProps> = ({ threads, isLoggedIn, user }: ThreadListProps) => {
     const [open, setOpen] = useState(false);
     const [newThread, setNewThread] = useState("");
     const [newThreadTitle, setNewThreadTitle] = useState("");
-    const [newThreadAuthor, setNewThreadAuthor] = useState("");
     const [newThreadTag, setNewThreadTag] = useState("");
     const [error, setError] = useState("");
     const [selectedTag, setSelectedTag] = useState<string>("");
@@ -74,16 +76,12 @@ const BasicThreadList: React.FC<ThreadListProps> = ({ threads }: ThreadListProps
         setNewThreadTitle(event.target.value);
     };
 
-    const handleNewThreadAuthorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setNewThreadAuthor(event.target.value);
-    };
-
     const handleNewThreadTagChange = (event: SelectChangeEvent<string>) => {
         setNewThreadTag(event.target.value);
     };
 
     const handleCreateThread = () => {
-        if (!newThread || !newThreadTitle || !newThreadAuthor || !newThreadTag) {
+        if (!newThread || !newThreadTitle || !isLoggedIn || !newThreadTag) {
             setError("Please fill in all the required fields.");
             return;
         }
@@ -92,11 +90,14 @@ const BasicThreadList: React.FC<ThreadListProps> = ({ threads }: ThreadListProps
             id: generateId(), // generate a unique id
             title: newThreadTitle,
             content: newThread,
-            author: newThreadAuthor,
+            author: user?.username ?? "Anonymous",
             tag: newThreadTag,
         };
 
         dispatch(addThread(thread));
+        setNewThread("");
+        setNewThreadTag("");
+        setNewThreadTitle("");
         handleClose();
     };
 
@@ -192,56 +193,67 @@ const BasicThreadList: React.FC<ThreadListProps> = ({ threads }: ThreadListProps
                 ))
             )}
             <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>Create New Thread</DialogTitle>
-                <DialogContent>
-                    {error && <Typography color="error">{error}</Typography>}
-                    <TextField
-                        margin="dense"
-                        label="Title"
-                        type="text"
-                        fullWidth
-                        value={newThreadTitle}
-                        onChange={handleNewThreadTitleChange}
-                    />
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        label="Thread Content"
-                        type="text"
-                        fullWidth
-                        value={newThread}
-                        onChange={handleNewThreadChange}
-                    />
-                    <TextField
-                        margin="dense"
-                        label="Username"
-                        type="text"
-                        fullWidth
-                        value={newThreadAuthor}
-                        onChange={handleNewThreadAuthorChange}
-                    />
-                    <Select
-                        value={newThreadTag}
-                        onChange={handleNewThreadTagChange}
-                        displayEmpty
-                        fullWidth
-                        margin="dense"
-                        label="Tag"
-                    >
-                        <MenuItem value="" disabled>
-                            Select a tag
-                        </MenuItem>
-                        {tags.map((tag) => (
-                            <MenuItem key={tag.name} value={tag.name}>
-                                {tag.name}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose}>Cancel</Button>
-                    <Button onClick={handleCreateThread}>Create</Button>
-                </DialogActions>
+                {isLoggedIn ? (
+                    <Dialog open={open} onClose={handleClose}>
+                        <DialogTitle>Create New Thread</DialogTitle>
+                        <DialogContent>
+                            {error && <Typography color="error">{error}</Typography>}
+                            <TextField
+                                margin="dense"
+                                label="Title"
+                                type="text"
+                                fullWidth
+                                value={newThreadTitle}
+                                onChange={handleNewThreadTitleChange}
+                            />
+                            <TextField
+                                autoFocus
+                                margin="dense"
+                                label="Thread Content"
+                                type="text"
+                                fullWidth
+                                value={newThread}
+                                onChange={handleNewThreadChange}
+                            />
+                            <Select
+                                value={newThreadTag}
+                                onChange={handleNewThreadTagChange}
+                                displayEmpty
+                                fullWidth
+                                margin="dense"
+                                label="Tag"
+                            >
+                                <MenuItem value="" disabled>
+                                    Select a tag
+                                </MenuItem>
+                                {tags.map((tag) => (
+                                    <MenuItem key={tag.name} value={tag.name}>
+                                        {tag.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                            <DialogContent>
+                                <Typography color="textSecondary" style={{ textAlign: "center" }}>
+                                    Posting as: {user?.username}
+                                </Typography>
+                            </DialogContent>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleClose}>Cancel</Button>
+                            <Button onClick={handleCreateThread}>Create</Button>
+                        </DialogActions>
+                    </Dialog>
+                ) : (
+                    <Dialog open={open} onClose={handleClose}>
+                        <DialogTitle>Login Required</DialogTitle>
+                        <DialogContent>
+                            <Typography>Please login to create a new thread using the account button below.</Typography>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleClose}>Close</Button>
+                        </DialogActions>
+                    </Dialog>
+                )}
             </Dialog>
         </>
     );

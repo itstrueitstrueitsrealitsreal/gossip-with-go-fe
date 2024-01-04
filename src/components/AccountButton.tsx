@@ -1,5 +1,5 @@
 import generateId from "./generateId";
-import { addUser, loginUser, selectUser, isUsernameTaken } from "../redux/slices/userSlice";
+import { addUser, loginUser, logoutUser, selectUser, isUsernameTaken } from "../redux/slices/userSlice";
 import { RootState } from "../redux/store";
 import User from "../types/User";
 import React, { useState } from "react";
@@ -14,10 +14,10 @@ import { useDispatch, useSelector } from "react-redux";
 
 interface AccountButtonProps {
     isLoggedIn: boolean;
-    username: string;
+    user?: User;
 }
 
-const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, username }) => {
+const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
     const [open, setOpen] = useState(false);
     const [loginUsername, setLoginUsername] = useState("");
     const [loginPassword, setLoginPassword] = useState("");
@@ -50,11 +50,12 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, username }) =
 
         if (user) {
             // Login successful, perform necessary actions
-            dispatch(loginUser(user));
-            alert("Login successful");
+            dispatch(loginUser(user)); // Dispatch loginUser action
             setLoginUsername("");
             setLoginPassword("");
+            setLoginError("");
             setOpen(false);
+            alert("Login successful.");
         } else {
             setLoginError("Invalid username or password");
         }
@@ -89,6 +90,7 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, username }) =
         setRegisterUsername("");
         setRegisterPassword("");
         setConfirmPassword("");
+        setRegisterError("");
         setRegisterDialogOpen(false);
 
         // Perform additional logic on successful registration
@@ -97,6 +99,9 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, username }) =
 
     const handleLogout = () => {
         // Perform logout logic here
+        dispatch(logoutUser()); // Dispatch logoutUser action
+        alert("Logout successful.");
+        setOpen(false);
     };
 
     const handleRegisterDialogOpen = () => {
@@ -134,9 +139,9 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, username }) =
             <Dialog open={open} onClose={handleClose}>
                 <DialogTitle>{isLoggedIn ? "Account Information" : "Login"}</DialogTitle>
                 <DialogContent>
-                    {isLoggedIn ? (
+                    {isLoggedIn && user ? (
                         <div>
-                            <p>Logged in as: {username}</p>
+                            <p>Logged in as: {user.username}</p>
                         </div>
                     ) : (
                         <div>

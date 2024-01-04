@@ -1,12 +1,15 @@
 import BasicThreadList from "../components/BasicThreadList";
 import AccountButton from "../components/AccountButton";
 import { selectThreads } from "../redux/slices/threadSlice";
+import { selectIsLoggedIn, selectLoggedInUser } from "../redux/slices/userSlice";
 import React from "react";
 import Typewriter from "typewriter-effect";
 import { useSelector } from "react-redux";
 
 const Home: React.FC = () => {
     const threads = useSelector(selectThreads);
+    const isLoggedIn = useSelector(selectIsLoggedIn);
+    const user = useSelector(selectLoggedInUser);
 
     return (
         <>
@@ -29,8 +32,8 @@ const Home: React.FC = () => {
                 />
             </h3>
             <br />
-            <BasicThreadList threads={threads} />
-            <AccountButton isLoggedIn={false} username={"Kenneth"} />
+            <BasicThreadList isLoggedIn={isLoggedIn} user={user || undefined} threads={threads} />
+            <AccountButton isLoggedIn={isLoggedIn} user={user || undefined} />
         </>
     );
 };
