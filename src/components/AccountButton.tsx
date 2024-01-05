@@ -28,6 +28,10 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
     const [registerError, setRegisterError] = useState("");
     const [registerDialogOpen, setRegisterDialogOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [changeUsername, setChangeUsername] = useState("");
+    const [changePassword, setChangePassword] = useState("");
+    const [confirmChangePassword, setConfirmChangePassword] = useState("");
+    const [changePasswordError, setChangePasswordError] = useState("");
     const dispatch = useDispatch();
     const selectedUser = useSelector((state: RootState) => selectUser(state, loginUsername, loginPassword));
     const isTaken = useSelector((state: RootState) => isUsernameTaken(state, registerUsername));
@@ -135,6 +139,71 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
         setDeleteDialogOpen(false);
     };
 
+    const handleChangeUsername = () => {
+        if (!user) {
+            return;
+        }
+        if (changeUsername === "") {
+            setChangePasswordError("Username cannot be empty!");
+            return;
+        }
+
+        // Perform change username logic here
+        const updatedUser: User = {
+            ...user,
+            username: changeUsername,
+        };
+        logoutUser();
+
+        // Update the user in the Redux store
+        dispatch(loginUser(updatedUser));
+
+        // Reset change username field
+        setChangeUsername("");
+        setChangePasswordError("");
+        setConfirmChangePassword("");
+        setChangePassword("");
+        setLoginError("");
+        setOpen(false);
+
+        // Perform additional logic on successful username change
+        alert("Username changed successfully to " + changeUsername + ".");
+    };
+
+    const handleChangePassword = () => {
+        if (!user) {
+            return;
+        }
+        if (changePassword === "") {
+            setChangePasswordError("Password cannot be empty!");
+            return;
+        }
+        if (changePassword !== confirmChangePassword) {
+            setChangePasswordError("Passwords do not match!");
+            return;
+        }
+
+        // Perform change password logic here
+        const updatedUser: User = {
+            ...user,
+            password: changePassword,
+        };
+
+        // Update the user in the Redux store
+        dispatch(loginUser(updatedUser));
+
+        // Reset change password field
+        setChangePassword("");
+        setChangeUsername("");
+        setConfirmChangePassword("");
+        setChangePasswordError("");
+        setLoginError("");
+        setOpen(false);
+
+        // Perform additional logic on successful password change
+        alert("Password changed successfully.");
+    };
+
     const theme = createTheme({
         palette: {
             primary: {
@@ -169,6 +238,37 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
                     {isLoggedIn && user ? (
                         <div>
                             <p>Logged in as: {user.username}</p>
+                            <TextField
+                                label="New Username"
+                                margin="dense"
+                                type="text"
+                                fullWidth
+                                value={changeUsername}
+                                onChange={(e) => setChangeUsername(e.target.value)}
+                            />
+                            <Button variant="text" color="primary" onClick={handleChangeUsername}>
+                                Change Username
+                            </Button>
+                            <TextField
+                                label="New Password"
+                                type="password"
+                                margin="dense"
+                                fullWidth
+                                value={changePassword}
+                                onChange={(e) => setChangePassword(e.target.value)}
+                            />
+                            <TextField
+                                label="Confirm Password"
+                                type="password"
+                                margin="dense"
+                                fullWidth
+                                value={confirmChangePassword}
+                                onChange={(e) => setConfirmChangePassword(e.target.value)}
+                            />
+                            <Button variant="text" color="primary" onClick={handleChangePassword}>
+                                Change Password
+                            </Button>
+                            {changePasswordError && <p style={{ color: "red" }}>{changePasswordError}</p>}
                         </div>
                     ) : (
                         <div>

@@ -1,7 +1,7 @@
 import { RootState } from "../store";
 import User from "../../types/User";
-import { createSlice } from "@reduxjs/toolkit";
 import CryptoJS from "crypto-js";
+import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
 interface UsersState {
@@ -35,23 +35,38 @@ export const usersSlice = createSlice({
         addUser: (state, action: PayloadAction<User>) => {
             const existingUser = state.users.find((user) => user.username === action.payload.username);
             if (existingUser) {
-                return;
+                // Return an error informing the user that the username is already taken
+                throw new Error("Username is already taken");
             }
             state.users.push(action.payload);
         },
         removeUser: (state, action: PayloadAction<string>) => {
             state.users = state.users.filter((user) => user.id !== action.payload);
         },
+        editUsername: (state, action: PayloadAction<{ id: string; newUsername: string }>) => {
+            const user = state.users.find((user) => user.id === action.payload.id);
+            if (user) {
+                const existingUser = state.users.find((user) => user.username === action.payload.newUsername);
+                if (existingUser) {
+                    // Return an error informing the user that the username is already taken
+                    throw new Error("Username is already taken");
+                }
+                user.username = action.payload.newUsername;
+            }
+        },
+        editPassword: (state, action: PayloadAction<{ id: string; newPassword: string }>) => {
+            const user = state.users.find((user) => user.id === action.payload.id);
+            if (user) {
+                user.password = hashPassword(action.payload.newPassword);
+            }
+        },
         loginUser: (state, action: PayloadAction<User>) => {
             state.isLoggedIn = true;
             state.loggedInUser = action.payload;
-            // You can perform additional actions when a user logs in
-            // For example, update some state indicating that the user is logged in
         },
         logoutUser: (state) => {
             state.isLoggedIn = false;
             state.loggedInUser = null;
-            // Perform additional actions when a user logs out
         },
         deleteUser: (state, action: PayloadAction<string>) => {
             state.users = state.users.filter((user) => user.id !== action.payload);
@@ -61,11 +76,12 @@ export const usersSlice = createSlice({
 
 // Function to check if a username is already taken
 export const isUsernameTaken = (state: RootState, username: string): boolean => {
-    const users = selectUsers(state); // Assuming you have a selector to get the users
+    const users = selectUsers(state);
     return users.some((user) => user.username === username);
 };
 
-export const { addUser, removeUser, loginUser, logoutUser, deleteUser } = usersSlice.actions;
+export const { addUser, removeUser, editUsername, editPassword, loginUser, logoutUser, deleteUser } =
+    usersSlice.actions;
 
 export const selectUsers = (state: RootState) => state.users.users;
 
