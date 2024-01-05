@@ -94,7 +94,7 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
         const user: User = {
             id: generateId(),
             username: registerUsername,
-            password: registerPassword,
+            password: hashPassword(registerPassword),
         };
 
         // Perform registration logic here
@@ -116,6 +116,8 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
     const handleLogout = () => {
         // Perform logout logic here
         dispatch(logoutUser()); // Dispatch logoutUser action
+        setLoginUsername("");
+        setLoginPassword("");
         alert("Logout successful.");
         setOpen(false);
     };
