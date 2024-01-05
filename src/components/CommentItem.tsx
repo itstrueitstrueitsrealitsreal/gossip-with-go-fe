@@ -1,14 +1,16 @@
 import Comment from "../types/Comment";
+import { selectIsLoggedIn, selectLoggedInUser } from "../redux/slices/userSlice";
+import { RootState } from "../redux/store";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import React from "react";
 import { Button, Card, CardContent, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
+import { useSelector } from "react-redux";
 
 type Props = {
     comment: Comment;
     onDelete: () => void;
     onEdit: () => void;
-    loggedInUsername?: string;
     loggedIn: boolean;
 };
 
@@ -61,8 +63,17 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const CommentItem: React.FC<Props> = ({ comment, onDelete, onEdit, loggedIn, loggedInUsername }) => {
+const CommentItem: React.FC<Props> = ({ comment, onDelete, onEdit, loggedIn }) => {
     const classes = useStyles();
+    useSelector(selectIsLoggedIn);
+    const loggedInUser = useSelector(selectLoggedInUser);
+    // const user = useSelector(selectLoggedInUser);
+    const authorId = useSelector((state: RootState) => {
+        const commentAuthor = comment.author;
+        const users = state.users;
+        const author = users.users.find((user) => user.username === commentAuthor);
+        return author?.id;
+    });
 
     return (
         <ThemeProvider theme={theme}>
@@ -74,7 +85,7 @@ const CommentItem: React.FC<Props> = ({ comment, onDelete, onEdit, loggedIn, log
                     <Typography color="textSecondary" className={classes.metadata} gutterBottom>
                         {"Posted by " + comment.author + " on " + comment.timestamp.toLocaleString()}
                     </Typography>
-                    {loggedIn && loggedInUsername === comment.author && (
+                    {loggedIn && loggedInUser && authorId === loggedInUser.id && (
                         <>
                             <Button variant="contained" color="error" onClick={onDelete} sx={{ marginBottom: ".5rem" }}>
                                 Delete comment

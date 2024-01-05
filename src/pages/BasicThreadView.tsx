@@ -314,7 +314,6 @@ const BasicThreadView: React.FC = () => {
                             <CommentItem
                                 comment={comment}
                                 loggedIn={isLoggedIn}
-                                loggedInUsername={user?.username}
                                 onDelete={() => handleDeleteComment(comment.id)}
                                 onEdit={() => handleEditButtonClick(comment.id, comment.body)}
                             />
