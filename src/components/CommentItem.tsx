@@ -12,6 +12,20 @@ type Props = {
 };
 
 const theme = createTheme({
+    palette: {
+        primary: {
+            main: "#1976d2",
+        },
+        secondary: {
+            main: "#f50057",
+        },
+        ochre: {
+            main: "#E3D026",
+            light: "#E9DB5D",
+            dark: "#A29415",
+            contrastText: "#242105",
+        },
+    },
     spacing: 8,
     components: {
         MuiCard: {
@@ -65,6 +79,9 @@ const CommentItem: React.FC<Props> = ({ comment, onDelete, loggedIn, loggedInUse
                                 Delete comment
                             </Button>
                             <br />
+                            <Button component="button" variant="contained" color="ochre" onClick={() => {}}>
+                                Edit comment
+                            </Button>
                         </>
                     )}
                 </CardContent>
