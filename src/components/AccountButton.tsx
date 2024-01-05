@@ -2,6 +2,7 @@ import generateId from "./generateId";
 import { addUser, loginUser, logoutUser, selectUser, isUsernameTaken, deleteUser } from "../redux/slices/userSlice";
 import { RootState } from "../redux/store";
 import User from "../types/User";
+import CryptoJS from "crypto-js";
 import React, { useState } from "react";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
@@ -45,6 +46,11 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
         setLoginPassword("");
         setLoginError("");
         setOpen(false);
+    };
+
+    // Helper function to hash the password
+    const hashPassword = (password: string) => {
+        return CryptoJS.SHA256(password).toString();
     };
 
     const handleLogin = () => {
@@ -186,7 +192,7 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
         // Perform change password logic here
         const updatedUser: User = {
             ...user,
-            password: changePassword,
+            password: hashPassword(changePassword),
         };
 
         // Update the user in the Redux store
