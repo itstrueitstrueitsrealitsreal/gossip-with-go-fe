@@ -299,7 +299,7 @@ const BasicThreadView: React.FC = () => {
                     <Dialog open={open} onClose={() => setOpen(false)}>
                         <DialogTitle>Login Required</DialogTitle>
                         <DialogContent>
-                            <Typography>Please login to create a new thread using the account button below.</Typography>
+                            <Typography>Please login to post comments using the account button below.</Typography>
                         </DialogContent>
                         <DialogActions>
                             <Button onClick={handleClose}>Close</Button>

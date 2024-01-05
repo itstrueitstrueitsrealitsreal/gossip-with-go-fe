@@ -53,6 +53,9 @@ export const usersSlice = createSlice({
             state.loggedInUser = null;
             // Perform additional actions when a user logs out
         },
+        deleteUser: (state, action: PayloadAction<string>) => {
+            state.users = state.users.filter((user) => user.id !== action.payload);
+        },
     },
 });
 
@@ -62,7 +65,7 @@ export const isUsernameTaken = (state: RootState, username: string): boolean => 
     return users.some((user) => user.username === username);
 };
 
-export const { addUser, removeUser, loginUser, logoutUser } = usersSlice.actions;
+export const { addUser, removeUser, loginUser, logoutUser, deleteUser } = usersSlice.actions;
 
 export const selectUsers = (state: RootState) => state.users.users;
 

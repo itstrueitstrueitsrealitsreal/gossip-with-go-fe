@@ -1,5 +1,5 @@
 import generateId from "./generateId";
-import { addUser, loginUser, logoutUser, selectUser, isUsernameTaken } from "../redux/slices/userSlice";
+import { addUser, loginUser, logoutUser, selectUser, isUsernameTaken, deleteUser } from "../redux/slices/userSlice";
 import { RootState } from "../redux/store";
 import User from "../types/User";
 import React, { useState } from "react";
@@ -27,6 +27,7 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [registerError, setRegisterError] = useState("");
     const [registerDialogOpen, setRegisterDialogOpen] = useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const dispatch = useDispatch();
     const selectedUser = useSelector((state: RootState) => selectUser(state, loginUsername, loginPassword));
     const isTaken = useSelector((state: RootState) => isUsernameTaken(state, registerUsername));
@@ -36,6 +37,9 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
     };
 
     const handleClose = () => {
+        setLoginUsername("");
+        setLoginPassword("");
+        setLoginError("");
         setOpen(false);
     };
 
@@ -92,9 +96,11 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
         setConfirmPassword("");
         setRegisterError("");
         setRegisterDialogOpen(false);
+        dispatch(loginUser(user)); // Dispatch loginUser action
+        setOpen(false);
 
         // Perform additional logic on successful registration
-        alert("Registration successful, proceed to login.");
+        alert("Registration successful.");
     };
 
     const handleLogout = () => {
@@ -110,6 +116,23 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
 
     const handleRegisterDialogClose = () => {
         setRegisterDialogOpen(false);
+    };
+
+    const handleDeleteDialogOpen = () => {
+        setDeleteDialogOpen(true);
+    };
+
+    const handleDeleteDialogClose = () => {
+        setDeleteDialogOpen(false);
+    };
+
+    const handleDeleteAccount = () => {
+        // Perform delete account logic here
+        dispatch(logoutUser()); // Dispatch logoutUser action
+        dispatch(deleteUser(user?.id || "")); // Dispatch deleteUser action
+        alert("Account deleted.");
+        setOpen(false);
+        setDeleteDialogOpen(false);
     };
 
     const theme = createTheme({
@@ -171,9 +194,14 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
                 </DialogContent>
                 <DialogActions style={{ marginTop: "auto" }}>
                     {isLoggedIn ? (
-                        <Button variant="text" color="secondary" onClick={handleLogout}>
-                            Logout
-                        </Button>
+                        <>
+                            <Button variant="text" color="secondary" onClick={handleDeleteDialogOpen}>
+                                Delete Account
+                            </Button>
+                            <Button variant="text" color="secondary" onClick={handleLogout}>
+                                Logout
+                            </Button>
+                        </>
                     ) : (
                         <>
                             {!isLoggedIn && (
@@ -224,6 +252,20 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
                         Register
                     </Button>
                     <Button variant="text" color="secondary" onClick={handleRegisterDialogClose}>
+                        Cancel
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog open={deleteDialogOpen} onClose={handleDeleteDialogClose}>
+                <DialogTitle>Delete Account</DialogTitle>
+                <DialogContent>
+                    <p>Are you sure you want to delete your account?</p>
+                </DialogContent>
+                <DialogActions>
+                    <Button variant="text" color="secondary" onClick={handleDeleteAccount}>
+                        Delete
+                    </Button>
+                    <Button variant="text" color="primary" onClick={handleDeleteDialogClose}>
                         Cancel
                     </Button>
                 </DialogActions>
