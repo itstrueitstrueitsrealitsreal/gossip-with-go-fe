@@ -253,7 +253,7 @@ const BasicThreadList: React.FC<ThreadListProps> = ({ threads, isLoggedIn, user 
                                 label="Title"
                                 type="text"
                                 fullWidth
-                                value={editThreadTitle ? editThreadTitle : newThreadTitle}
+                                value={editThreadTitle !== "" ? editThreadTitle : newThreadTitle}
                                 onChange={
                                     editThreadId
                                         ? (e) => setEditThreadTitle(e.target.value)

@@ -1,6 +1,5 @@
-import BasicCommentList from "../components/CommentList";
 import Comment from "../types/Comment";
-import { selectComments, addComment } from "../redux/slices/commentSlice";
+import { selectComments, addComment, editComment, deleteComment } from "../redux/slices/commentSlice";
 import { deleteThread, selectThreadById, selectThreads } from "../redux/slices/threadSlice";
 import ThreadItem from "../components/ThreadItem";
 import { RootState } from "../redux/store"; // Import RootState type
@@ -8,6 +7,7 @@ import generateId from "../components/generateId";
 import { selectIsLoggedIn, selectLoggedInUser } from "../redux/slices/userSlice";
 import Thread from "../types/Thread";
 import AccountButton from "../components/AccountButton";
+import CommentItem from "../components/CommentItem";
 import {
     Button,
     Typography,
@@ -18,6 +18,8 @@ import {
     DialogContent,
     DialogActions,
     TextField,
+    Card,
+    CardContent,
 } from "@mui/material";
 import { Link, useParams } from "react-router-dom";
 import React, { useState } from "react";
@@ -99,6 +101,26 @@ const theme = createTheme({
     },
 });
 
+const NoCommentsComponent: React.FC = () => {
+    return (
+        <Card
+            sx={{
+                marginBottom: "0.5rem",
+                marginTop: "0.5rem",
+                boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+                width: "40vw",
+                margin: "0 auto",
+                borderRadius: "8px",
+            }}
+            variant="outlined"
+        >
+            <CardContent>
+                <Typography variant="body1">No comments found for this thread.</Typography>
+            </CardContent>
+        </Card>
+    );
+};
+
 const BasicThreadView: React.FC = () => {
     const [inputComment, setInputComment] = useState("");
     const comments = useSelector(selectComments);
@@ -106,7 +128,9 @@ const BasicThreadView: React.FC = () => {
     const isLoggedIn = useSelector(selectIsLoggedIn);
     const user = useSelector(selectLoggedInUser);
     const { id }: { id?: string } = useParams();
-    const threads: Thread[] = useSelector(selectThreads); // Declare the 'threads' variable and provide its type
+    const threads: Thread[] = useSelector(selectThreads);
+    const [editCommentId, setEditCommentId] = useState<string>("");
+    const [editCommentBody, setEditCommentBody] = useState<string>("");
 
     const handleDeleteThread = (threadId: string) => {
         const threadToDelete = threads.find((thread: Thread) => thread.id === threadId); // Specify the type of the 'thread' parameter
@@ -124,6 +148,9 @@ const BasicThreadView: React.FC = () => {
 
     const handleClose = () => {
         setOpen(false);
+        setError("");
+        setEditCommentBody("");
+        setEditCommentId("");
     };
 
     const dispatch = useDispatch();
@@ -148,6 +175,39 @@ const BasicThreadView: React.FC = () => {
         setInputComment("");
         setError("");
     }
+
+    const handleEditComment = () => {
+        if (editCommentBody.trim() === "" || !isLoggedIn || editCommentId === "") {
+            setError("Please fill in all the required fields.");
+            return;
+        }
+
+        const editedComment: Comment = {
+            id: editCommentId,
+            body: editCommentBody,
+            author: user?.username ?? "Anonymous",
+            timestamp: new Date(),
+        };
+
+        dispatch(editComment(editedComment));
+        setEditCommentBody("");
+        setEditCommentId("");
+        handleClose();
+    };
+
+    const handleDeleteComment = (commentId: string) => {
+        const commentToDelete = comments.find((comment) => comment.id === commentId);
+
+        if (commentToDelete && isLoggedIn && commentToDelete.author === user?.username) {
+            dispatch(deleteComment(commentId));
+        }
+    };
+
+    const handleEditButtonClick = (commentId: string, commentBody: string) => {
+        setEditCommentId(commentId);
+        setEditCommentBody(commentBody);
+        setOpen(true);
+    };
 
     return (
         <ThemeProvider theme={theme}>
@@ -180,6 +240,7 @@ const BasicThreadView: React.FC = () => {
                     {"New Comment"}
                 </Button>
                 <AccountButton isLoggedIn={isLoggedIn} user={user || undefined} />
+                <br />
                 {isLoggedIn && user ? (
                     <Dialog
                         open={open}
@@ -192,14 +253,15 @@ const BasicThreadView: React.FC = () => {
                             },
                         }}
                     >
-                        <DialogTitle id="post-comment-dialog-title">{"Post Comment"}</DialogTitle>
+                        <DialogTitle id="post-comment-dialog-title">
+                            {editCommentId ? "Edit Comment" : "Post Comment"}
+                        </DialogTitle>
                         <DialogContent>
                             {error && (
                                 <Typography variant="body2" color="error" component="p">
                                     {error}
                                 </Typography>
                             )}
-
                             <TextField
                                 margin="dense"
                                 label="Your Comment"
@@ -207,8 +269,12 @@ const BasicThreadView: React.FC = () => {
                                 fullWidth
                                 multiline
                                 rows={4}
-                                value={inputComment}
-                                onChange={(e) => setInputComment(e.target.value)}
+                                value={editCommentBody !== "" ? editCommentBody : inputComment}
+                                onChange={
+                                    editCommentId
+                                        ? (e) => setEditCommentBody(e.target.value)
+                                        : (e) => setInputComment(e.target.value)
+                                }
                             />
                             <DialogContent>
                                 <Typography color="textSecondary" style={{ textAlign: "center" }}>
@@ -218,9 +284,15 @@ const BasicThreadView: React.FC = () => {
                         </DialogContent>
                         <DialogActions>
                             <Button onClick={handleClose}>Cancel</Button>
-                            <Button onClick={postComment} color="primary">
-                                Post Comment
-                            </Button>
+                            {editCommentId ? (
+                                <Button onClick={handleEditComment} color="primary">
+                                    Save
+                                </Button>
+                            ) : (
+                                <Button onClick={postComment} color="primary">
+                                    Post Comment
+                                </Button>
+                            )}
                         </DialogActions>
                     </Dialog>
                 ) : (
@@ -234,7 +306,22 @@ const BasicThreadView: React.FC = () => {
                         </DialogActions>
                     </Dialog>
                 )}
-                <BasicCommentList comments={comments} />
+                {comments.length === 0 ? (
+                    <NoCommentsComponent />
+                ) : (
+                    comments.map((comment) => (
+                        <li key={comment.id} style={{ listStyleType: "none" }}>
+                            <CommentItem
+                                comment={comment}
+                                loggedIn={isLoggedIn}
+                                loggedInUsername={user?.username}
+                                onDelete={() => handleDeleteComment(comment.id)}
+                                onEdit={() => handleEditButtonClick(comment.id, comment.body)}
+                            />
+                        </li>
+                    ))
+                )}
+                {/* <BasicCommentList comments={comments} onEdit={() => handleEditButtonClick(comment.id, comment.body)} /> */}
                 <ThemeProvider theme={theme}>
                     <Button
                         variant="contained"

@@ -7,6 +7,7 @@ import { makeStyles } from "@mui/styles";
 type Props = {
     comment: Comment;
     onDelete: () => void;
+    onEdit: () => void;
     loggedInUsername?: string;
     loggedIn: boolean;
 };
@@ -60,7 +61,7 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const CommentItem: React.FC<Props> = ({ comment, onDelete, loggedIn, loggedInUsername }) => {
+const CommentItem: React.FC<Props> = ({ comment, onDelete, onEdit, loggedIn, loggedInUsername }) => {
     const classes = useStyles();
 
     return (
@@ -79,7 +80,7 @@ const CommentItem: React.FC<Props> = ({ comment, onDelete, loggedIn, loggedInUse
                                 Delete comment
                             </Button>
                             <br />
-                            <Button component="button" variant="contained" color="ochre" onClick={() => {}}>
+                            <Button component="button" variant="contained" color="ochre" onClick={onEdit}>
                                 Edit comment
                             </Button>
                         </>
