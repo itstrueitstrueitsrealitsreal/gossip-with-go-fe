@@ -67,7 +67,6 @@ const CommentItem: React.FC<Props> = ({ comment, onDelete, onEdit, loggedIn }) =
     const classes = useStyles();
     useSelector(selectIsLoggedIn);
     const loggedInUser = useSelector(selectLoggedInUser);
-    // const user = useSelector(selectLoggedInUser);
     const authorId = useSelector((state: RootState) => {
         const commentAuthor = comment.author;
         const users = state.users;
