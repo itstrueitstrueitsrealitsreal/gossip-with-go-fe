@@ -6,8 +6,10 @@ import AccountButton from "./AccountButton";
 import Thread from "../types/Thread";
 import User from "../types/User";
 import { addThread, deleteThread, editThread } from "../redux/slices/threadSlice"; // Import deleteThread and editThread actions
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { fetchTags, selectTags } from "../redux/slices/tagSlice";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+// eslint-disable-next-line import/named
 import {
     Typography,
     Button,
@@ -62,6 +64,7 @@ const BasicThreadList: React.FC<ThreadListProps> = ({ threads, isLoggedIn, user 
     const [editThreadContent, setEditThreadContent] = useState<string>(""); // Track the content of the thread being edited
     const [editThreadTitle, setEditThreadTitle] = useState<string>(""); // Track the title of the thread being edited
     const [editThreadTag, setEditThreadTag] = useState<string>(""); // Track the tag of the thread being edited
+
     const dispatch = useDispatch();
 
     const handleOpen = () => {
@@ -74,6 +77,12 @@ const BasicThreadList: React.FC<ThreadListProps> = ({ threads, isLoggedIn, user 
         setEditThreadId(""); // Reset the edit thread id
         setEditThreadContent(""); // Reset the edit thread content
     };
+
+    useEffect(() => {
+        dispatch({ type: "FETCH_TAGS", payload: fetchTags() });
+    }, [dispatch]);
+
+    const tags = useSelector(selectTags);
 
     const handleNewThreadChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setNewThread(event.target.value);
@@ -145,24 +154,17 @@ const BasicThreadList: React.FC<ThreadListProps> = ({ threads, isLoggedIn, user 
         setOpen(true);
     };
 
-    const tags = [
-        { name: "Discussion" },
-        { name: "Question" },
-        { name: "Looking for Advice" },
-        { name: "Meme" },
-        { name: "Misc" },
-        { name: "Poll" },
-    ];
+    const filters = [...Object.values(tags), { id: "t0", name: "All" }];
 
-    const filters = [
-        { name: "All" },
-        { name: "Discussion" },
-        { name: "Question" },
-        { name: "Looking for Advice" },
-        { name: "Meme" },
-        { name: "Misc" },
-        { name: "Poll" },
-    ];
+    // const filters = [
+    //     { name: "All" },
+    //     { name: "Discussion" },
+    //     { name: "Question" },
+    //     { name: "Looking for Advice" },
+    //     { name: "Meme" },
+    //     { name: "Misc" },
+    //     { name: "Poll" },
+    // ];
 
     const filteredThreads = selectedTag
         ? threads.filter((thread) => (selectedTag === "All" ? true : thread.tag === selectedTag))
@@ -209,7 +211,7 @@ const BasicThreadList: React.FC<ThreadListProps> = ({ threads, isLoggedIn, user 
                                 Select a tag
                             </MenuItem>
                             {filters.map((tag) => (
-                                <MenuItem key={tag.name} value={tag.name}>
+                                <MenuItem key={tag.id} value={tag.name}>
                                     {tag.name}
                                 </MenuItem>
                             ))}
@@ -283,7 +285,7 @@ const BasicThreadList: React.FC<ThreadListProps> = ({ threads, isLoggedIn, user 
                                     Select a tag
                                 </MenuItem>
                                 {tags.map((tag) => (
-                                    <MenuItem key={tag.name} value={tag.name}>
+                                    <MenuItem key={tag.id} value={tag.name}>
                                         {tag.name}
                                     </MenuItem>
                                 ))}

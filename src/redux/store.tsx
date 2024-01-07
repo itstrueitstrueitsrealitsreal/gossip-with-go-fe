@@ -11,6 +11,7 @@ const store = configureStore({
         threads: threadsReducer,
         users: usersReducer,
     },
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
