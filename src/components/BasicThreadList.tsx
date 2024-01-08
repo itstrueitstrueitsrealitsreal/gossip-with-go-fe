@@ -160,17 +160,7 @@ const BasicThreadList: React.FC<ThreadListProps> = ({ threads, isLoggedIn, user 
         setOpen(true);
     };
 
-    const filters = [...Object.values(tags), { id: "t0", name: "All" }];
-
-    // const filters = [
-    //     { name: "All" },
-    //     { name: "Discussion" },
-    //     { name: "Question" },
-    //     { name: "Looking for Advice" },
-    //     { name: "Meme" },
-    //     { name: "Misc" },
-    //     { name: "Poll" },
-    // ];
+    const filters = [{ id: "t0", name: "All" }, ...Object.values(tags)];
 
     const filteredThreads = selectedTag
         ? threads.filter((thread) => (selectedTag === "All" ? true : thread.tag === selectedTag))
