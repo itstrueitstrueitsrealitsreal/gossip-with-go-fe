@@ -7,8 +7,13 @@ import Thread from "../types/Thread";
 import User from "../types/User";
 import { addThread, deleteThread, editThread } from "../redux/slices/threadSlice"; // Import deleteThread and editThread actions
 import { fetchTags, selectTags } from "../redux/slices/tagSlice";
+// eslint-disable-next-line import/named
+import { RootState } from "../redux/store";
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+// eslint-disable-next-line import/named
+import { ThunkDispatch } from "redux-thunk";
+
 // eslint-disable-next-line import/named
 import {
     Typography,
@@ -26,6 +31,7 @@ import {
     CardContent,
     InputLabel,
 } from "@mui/material";
+import type { AnyAction } from "redux";
 
 interface ThreadListProps {
     threads: Thread[];
@@ -65,7 +71,7 @@ const BasicThreadList: React.FC<ThreadListProps> = ({ threads, isLoggedIn, user 
     const [editThreadTitle, setEditThreadTitle] = useState<string>(""); // Track the title of the thread being edited
     const [editThreadTag, setEditThreadTag] = useState<string>(""); // Track the tag of the thread being edited
 
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<ThunkDispatch<RootState, undefined, AnyAction>>();
 
     const handleOpen = () => {
         setOpen(true);
@@ -79,7 +85,7 @@ const BasicThreadList: React.FC<ThreadListProps> = ({ threads, isLoggedIn, user 
     };
 
     useEffect(() => {
-        dispatch({ type: "FETCH_TAGS", payload: fetchTags() });
+        dispatch(fetchTags());
     }, [dispatch]);
 
     const tags = useSelector(selectTags);

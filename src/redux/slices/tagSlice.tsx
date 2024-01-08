@@ -1,9 +1,34 @@
 import { RootState } from "../store";
 import Tag from "../../types/Tag";
-// eslint-disable-next-line import/named
-import { createSlice, ThunkDispatch, AnyAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
+export const fetchTags = createAsyncThunk("tags/fetchTags", async (_, { rejectWithValue }) => {
+    try {
+        const response = await fetch("https://gossip-with-go.onrender.com/tags");
+        if (!response.ok) {
+            throw new Error("Failed to fetch tags");
+        }
+
+        const responseData = await response.json();
+
+        const tags = responseData.payload.data.map((tag: Tag) => ({
+            id: tag.id,
+            name: tag.name,
+        }));
+
+        return tags;
+    } catch (err) {
+        return rejectWithValue((err as Error).message);
+    }
+});
+
+// Other synchronous action creators
+export const addTag = (tag: Tag) => {
+    return { type: "tags/addTag", payload: tag };
+};
+
+// Initial state for tags
 interface TagsState {
     tags: Tag[];
     status: "idle" | "loading" | "succeeded" | "failed";
@@ -16,51 +41,39 @@ const initialState: TagsState = {
     error: null,
 };
 
+// Create a slice with reducers and async thunk
 export const tagSlice = createSlice({
     name: "tags",
     initialState,
     reducers: {
-        addTag: (state, action: PayloadAction<Tag>) => {
-            state.tags.push(action.payload);
+        // Other synchronous reducers
+        clearTags: (state) => {
+            state.tags = [];
         },
-        fetchTagsStart: (state) => {
-            state.status = "loading";
-        },
-        fetchTagsSuccess: (state, action: PayloadAction<{ data: Tag[] }>) => {
-            state.status = "succeeded";
-            state.tags = action.payload.data;
-        },
-        fetchTagsFailure: (state, action: PayloadAction<string | null>) => {
-            state.status = "failed";
-            state.error = action.payload;
-        },
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchTags.pending, (state) => {
+                state.status = "loading";
+            })
+            .addCase(fetchTags.fulfilled, (state, action: PayloadAction<Tag[]>) => {
+                state.status = "succeeded";
+                state.tags = action.payload;
+            })
+            .addCase(fetchTags.rejected, (state, action) => {
+                state.status = "failed";
+                state.error = action.payload?.toString() ?? "Unknown error"; // handle the payload appropriately
+            });
     },
 });
 
-// Define a type for the dispatch function that matches the actual action types
-type AppDispatch = ThunkDispatch<RootState, undefined, AnyAction>;
+// Export the synchronous action creators
+export const { clearTags } = tagSlice.actions;
 
-export const fetchTags = () => {
-    return async (dispatch: AppDispatch) => {
-        try {
-            dispatch(tagSlice.actions.fetchTagsStart());
-            const response = await fetch("https://gossip-with-go.onrender.com/tags");
-            const responseData = await response.json();
-            console.log("API Response Data:", responseData);
-
-            // Assuming responseData is the structure you provided
-            dispatch(tagSlice.actions.fetchTagsSuccess(responseData.payload));
-        } catch (error) {
-            console.error("API Fetch Error:", error);
-            dispatch(tagSlice.actions.fetchTagsFailure((error as Error).message ?? null));
-        }
-    };
-};
-
+// Selectors for accessing the state
 export const selectTags = (state: RootState) => state.tags.tags;
 export const selectTagsStatus = (state: RootState) => state.tags.status;
 export const selectTagsError = (state: RootState) => state.tags.error;
 
-export const { addTag, fetchTagsStart, fetchTagsSuccess, fetchTagsFailure } = tagSlice.actions;
-
+// Export the reducer
 export default tagSlice.reducer;
