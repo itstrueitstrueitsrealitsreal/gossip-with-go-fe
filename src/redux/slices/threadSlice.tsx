@@ -1,78 +1,29 @@
 import { RootState } from "../store";
 import Thread from "../../types/Thread";
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
+
+// Define the thunk to fetch threads
+export const fetchThreads = createAsyncThunk("threads/fetchThreads", async () => {
+    const response = await fetch(process.env.REACT_APP_API_URL + "/threads/");
+    if (!response.ok) {
+        throw new Error("Failed to fetch threads");
+    }
+
+    const responseData = await response.json();
+    return responseData.payload.data;
+});
 
 interface ThreadsState {
     threads: Thread[];
+    status: "idle" | "loading" | "succeeded" | "failed";
+    error: string | null;
 }
 
 const initialState: ThreadsState = {
-    threads: [
-        {
-            id: "1",
-            author: "Aiken",
-            tag: "Discussion",
-            title: "Inspirational Quotes",
-            content: "The best way to predict the future is to invent it.\n- Alan Kay",
-        },
-        {
-            id: "2",
-            author: "Emma",
-            tag: "Question",
-            title: "Favorite Programming Language",
-            content: "What is your favorite programming language and why?",
-        },
-        {
-            id: "3",
-            author: "Frank",
-            tag: "Looking for Advice",
-            title: "Career Change",
-            content: "I'm considering a career change. Any advice?",
-        },
-        {
-            id: "4",
-            author: "Grace",
-            tag: "Meme",
-            title: "Funny Programming Memes",
-            content: "Share your favorite programming memes!",
-        },
-        {
-            id: "5",
-            author: "Henry",
-            tag: "Misc",
-            title: "Book Recommendations",
-            content: "Looking for book recommendations. Any genre!",
-        },
-        {
-            id: "6",
-            author: "Isabella",
-            tag: "Poll",
-            title: "Favorite Movie Genre",
-            content: "What is your favorite movie genre?",
-        },
-        {
-            id: "7",
-            author: "Jack",
-            tag: "Discussion",
-            title: "Favorite Programming Language",
-            content: "What is your favorite programming language and why?",
-        },
-        {
-            id: "8",
-            author: "Lily",
-            tag: "Question",
-            title: "Inspirational Quotes",
-            content: "Share your favorite inspirational quotes!",
-        },
-        {
-            id: "9",
-            author: "Max",
-            tag: "Looking for Advice",
-            title: "Career Change",
-            content: "Any advice for someone considering a career change?",
-        },
-    ],
+    threads: [],
+    status: "idle",
+    error: null,
 };
 
 export const threadSlice = createSlice({
@@ -96,14 +47,28 @@ export const threadSlice = createSlice({
             }
         },
     },
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchThreads.pending, (state) => {
+                state.status = "loading";
+            })
+            .addCase(fetchThreads.fulfilled, (state, action: PayloadAction<Thread[]>) => {
+                state.status = "succeeded";
+                state.threads = action.payload;
+            })
+            .addCase(fetchThreads.rejected, (state, action) => {
+                state.status = "failed";
+                state.error = action.payload?.toString() ?? "Unknown error";
+            });
+    },
 });
 
 export const { addThread, editThread, deleteThread } = threadSlice.actions;
 
 export const selectThreads = (state: RootState) => state.threads.threads;
-
-export const selectThreadById = (state: RootState, id: string) => {
-    return state.threads.threads.find((thread) => thread.id === id);
-};
+export const selectThreadById = (state: RootState, id: string) =>
+    state.threads.threads.find((thread) => thread.id === id);
+export const selectThreadsStatus = (state: RootState) => state.threads.status;
+export const selectThreadsError = (state: RootState) => state.threads.error;
 
 export default threadSlice.reducer;

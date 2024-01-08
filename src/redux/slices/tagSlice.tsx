@@ -5,7 +5,8 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 
 export const fetchTags = createAsyncThunk("tags/fetchTags", async (_, { rejectWithValue }) => {
     try {
-        const response = await fetch("https://gossip-with-go.onrender.com/tags");
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/tags/`);
+
         if (!response.ok) {
             throw new Error("Failed to fetch tags");
         }

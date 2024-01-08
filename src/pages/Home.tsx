@@ -1,11 +1,22 @@
 import BasicThreadList from "../components/BasicThreadList";
-import { selectThreads } from "../redux/slices/threadSlice";
+import { fetchThreads, selectThreads } from "../redux/slices/threadSlice";
 import { selectIsLoggedIn, selectLoggedInUser } from "../redux/slices/userSlice";
-import React from "react";
+import { RootState } from "../redux/store";
+import React, { useEffect } from "react";
 import Typewriter from "typewriter-effect";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+// eslint-disable-next-line import/named
+import { ThunkDispatch } from "redux-thunk";
+// eslint-disable-next-line import/named
+import { AnyAction } from "redux";
 
 const Home: React.FC = () => {
+    const dispatch = useDispatch<ThunkDispatch<RootState, undefined, AnyAction>>();
+
+    useEffect(() => {
+        dispatch(fetchThreads());
+    }, [dispatch]);
+
     const threads = useSelector(selectThreads);
     const isLoggedIn = useSelector(selectIsLoggedIn);
     const user = useSelector(selectLoggedInUser);

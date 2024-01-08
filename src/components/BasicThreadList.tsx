@@ -7,14 +7,11 @@ import Thread from "../types/Thread";
 import User from "../types/User";
 import { addThread, deleteThread, editThread } from "../redux/slices/threadSlice"; // Import deleteThread and editThread actions
 import { fetchTags, selectTags } from "../redux/slices/tagSlice";
-// eslint-disable-next-line import/named
 import { RootState } from "../redux/store";
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 // eslint-disable-next-line import/named
 import { ThunkDispatch } from "redux-thunk";
-
-// eslint-disable-next-line import/named
 import {
     Typography,
     Button,
