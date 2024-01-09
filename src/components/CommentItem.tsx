@@ -70,7 +70,7 @@ const CommentItem: React.FC<Props> = ({ comment, onDelete, onEdit, loggedIn }) =
     const authorId = useSelector((state: RootState) => {
         const commentAuthor = comment.author;
         const users = state.users;
-        const author = users.users.find((user) => user.username === commentAuthor);
+        const author = users.users?.find((user) => user.username === commentAuthor);
         return author?.id;
     });
 

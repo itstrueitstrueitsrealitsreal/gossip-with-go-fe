@@ -1,9 +1,16 @@
 import generateId from "./generateId";
-import { addUser, loginUser, logoutUser, selectUser, isUsernameTaken, deleteUser } from "../redux/slices/userSlice";
+import {
+    addUser,
+    loginUser,
+    logoutUser,
+    selectUser,
+    isUsernameTaken,
+    deleteUser,
+    fetchUsers,
+} from "../redux/slices/userSlice";
 import { RootState } from "../redux/store";
 import User from "../types/User";
-import CryptoJS from "crypto-js";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -12,6 +19,10 @@ import DialogActions from "@material-ui/core/DialogActions";
 import TextField from "@material-ui/core/TextField";
 import { createTheme, ThemeProvider } from "@material-ui/core/styles";
 import { useDispatch, useSelector } from "react-redux";
+// eslint-disable-next-line import/named
+import { ThunkDispatch } from "redux-thunk";
+// eslint-disable-next-line import/named
+import { AnyAction } from "redux";
 
 interface AccountButtonProps {
     isLoggedIn: boolean;
@@ -33,9 +44,14 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
     const [changePassword, setChangePassword] = useState("");
     const [confirmChangePassword, setConfirmChangePassword] = useState("");
     const [changePasswordError, setChangePasswordError] = useState("");
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<ThunkDispatch<RootState, undefined, AnyAction>>();
     const selectedUser = useSelector((state: RootState) => selectUser(state, loginUsername, loginPassword));
+    console.log(selectedUser);
     const isTaken = useSelector((state: RootState) => isUsernameTaken(state, registerUsername));
+
+    useEffect(() => {
+        dispatch(fetchUsers());
+    }, [dispatch]);
 
     const handleOpen = () => {
         setOpen(true);
@@ -49,33 +65,53 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
     };
 
     // Helper function to hash the password
-    const hashPassword = (password: string) => {
-        return CryptoJS.SHA256(password).toString();
-    };
+    async function hashPassword(password: string | undefined) {
+        // Convert the password string to an ArrayBuffer
+        const encoder = new TextEncoder();
+        const data = encoder.encode(password);
 
-    const handleLogin = () => {
+        // Calculate the SHA-256 hash
+        const buffer = await crypto.subtle.digest("SHA-256", data);
+
+        // Convert the hash ArrayBuffer to a hex-encoded string
+        const hashedPassword = Array.from(new Uint8Array(buffer))
+            .map((byte) => byte.toString(16).padStart(2, "0"))
+            .join("");
+
+        return hashedPassword;
+    }
+
+    const handleLogin = async () => {
         if (loginUsername === "" || loginPassword === "") {
             setLoginError("Username and password cannot be empty!");
             return;
         }
 
-        // Find the user with the matching username and password
-        const user = selectedUser;
+        try {
+            // Wait for the Promise to resolve and get the user
+            const user = await selectedUser;
 
-        if (user) {
-            // Login successful, perform necessary actions
-            dispatch(loginUser(user)); // Dispatch loginUser action
-            setLoginUsername("");
-            setLoginPassword("");
-            setLoginError("");
-            setOpen(false);
-            alert("Login successful.");
-        } else {
-            setLoginError("Invalid username or password.");
+            if (user) {
+                // Login successful, perform necessary actions
+                dispatch(loginUser(user)); // Dispatch loginUser action
+                setLoginUsername("");
+                setLoginPassword("");
+                setLoginError("");
+                setOpen(false);
+                alert("Login successful.");
+            } else {
+                console.log("username: ", loginUsername);
+                console.log("password: ", loginPassword);
+                console.log("user: ", user);
+                setLoginError("Invalid username or password.");
+            }
+        } catch (error) {
+            console.error("Error while logging in:", error);
+            setLoginError("An error occurred while logging in.");
         }
     };
 
-    const handleRegister = () => {
+    const handleRegister = async () => {
         if (registerUsername === "" || registerPassword === "" || confirmPassword === "") {
             setRegisterError("All fields are required!");
             return;
@@ -86,6 +122,8 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
             return;
         }
 
+        const hashedPassword = await hashPassword(registerPassword);
+
         if (isTaken) {
             setRegisterError("Username already exists!");
             return;
@@ -94,7 +132,7 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
         const user: User = {
             id: generateId(),
             username: registerUsername,
-            password: hashPassword(registerPassword),
+            password: hashedPassword,
         };
 
         // Perform registration logic here
@@ -178,7 +216,7 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
         alert("Username changed successfully to " + changeUsername + ".");
     };
 
-    const handleChangePassword = () => {
+    const handleChangePassword = async () => {
         if (!user) {
             return;
         }
@@ -190,11 +228,11 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
             setChangePasswordError("Passwords do not match!");
             return;
         }
-
+        const hashedPassword = await hashPassword(changePassword);
         // Perform change password logic here
         const updatedUser: User = {
             ...user,
-            password: hashPassword(changePassword),
+            password: hashedPassword,
         };
 
         // Update the user in the Redux store

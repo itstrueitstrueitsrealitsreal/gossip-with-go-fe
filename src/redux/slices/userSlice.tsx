@@ -1,7 +1,6 @@
 import { RootState } from "../store";
 import User from "../../types/User";
-import CryptoJS from "crypto-js";
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
 interface UsersState {
@@ -11,19 +10,31 @@ interface UsersState {
 }
 
 // Helper function to hash the password
-const hashPassword = (password: string) => {
-    return CryptoJS.SHA256(password).toString();
-};
+async function hashPassword(password: string | undefined) {
+    // Convert the password string to an ArrayBuffer
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
 
-const exampleUsers: User[] = [
-    { id: "1", username: "John", password: hashPassword("password1") },
-    { id: "2", username: "Jane", password: hashPassword("password2") },
-    { id: "3", username: "Alice", password: hashPassword("password3") },
-    { id: "4", username: "Aiken", password: hashPassword("password4") },
-];
+    // Calculate the SHA-256 hash
+    const buffer = await crypto.subtle.digest("SHA-256", data);
+
+    // Convert the hash ArrayBuffer to a hex-encoded string
+    const hashedPassword = Array.from(new Uint8Array(buffer))
+        .map((byte) => byte.toString(16).padStart(2, "0"))
+        .join("");
+    return hashedPassword;
+}
+
+// Async thunk to fetch users from an API
+export const fetchUsers = createAsyncThunk("users/fetchUsers", async () => {
+    const response = await fetch(process.env.REACT_APP_API_URL + "/users");
+    const data = await response.json();
+    console.log("users: " + data.users);
+    return data.users;
+});
 
 const initialState: UsersState = {
-    users: exampleUsers,
+    users: [],
     isLoggedIn: false,
     loggedInUser: null,
 };
@@ -57,9 +68,13 @@ export const usersSlice = createSlice({
         editPassword: (state, action: PayloadAction<{ id: string; newPassword: string }>) => {
             const user = state.users.find((user) => user.id === action.payload.id);
             if (user) {
-                user.password = hashPassword(action.payload.newPassword);
+                // Hash the new password asynchronously
+                hashPassword(action.payload.newPassword).then((hashedPassword) => {
+                    user.password = hashedPassword;
+                });
             }
         },
+
         loginUser: (state, action: PayloadAction<User>) => {
             state.isLoggedIn = true;
             state.loggedInUser = action.payload;
@@ -72,11 +87,16 @@ export const usersSlice = createSlice({
             state.users = state.users.filter((user) => user.id !== action.payload);
         },
     },
+    extraReducers: (builder) => {
+        builder.addCase(fetchUsers.fulfilled, (state, action) => {
+            state.users = action.payload;
+        });
+    },
 });
 
 // Function to check if a username is already taken
 export const isUsernameTaken = (state: RootState, username: string): boolean => {
-    const users = selectUsers(state);
+    const users = state.users?.users || []; // Use optional chaining to handle potential undefined objects
     return users.some((user) => user.username === username);
 };
 
@@ -85,10 +105,19 @@ export const { addUser, removeUser, editUsername, editPassword, loginUser, logou
 
 export const selectUsers = (state: RootState) => state.users.users;
 
-export const selectUser = (state: RootState, username: string, password: string) => {
-    const hashedPassword = hashPassword(password);
+export const selectUser = async (state: RootState, username: string, password: string): Promise<User | null> => {
+    const hashedPassword = await hashPassword(password);
 
-    return state.users.users.find((user) => user.username === username && user.password === hashedPassword);
+    // Check if state.users and state.users.users are defined
+    if (!state.users || !state.users.users) {
+        return null;
+    }
+
+    const users = state.users.users;
+
+    const matchingUser = users.find((user) => user.username === username && user.password === hashedPassword);
+
+    return matchingUser || null;
 };
 
 export const selectIsLoggedIn = (state: RootState) => state.users.isLoggedIn;

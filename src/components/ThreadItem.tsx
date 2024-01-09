@@ -42,7 +42,7 @@ const ThreadItem: React.FC<ThreadItemProps> = ({ id, title, author, tag, content
 
     const authorId = useSelector((state: RootState) => {
         const users = state.users;
-        const threadAuthor = users.users.find((user) => user.username === author);
+        const threadAuthor = users.users?.find((user) => user.username === author);
         return threadAuthor?.id;
     });
 
