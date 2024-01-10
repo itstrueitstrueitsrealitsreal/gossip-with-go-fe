@@ -68,7 +68,6 @@ export const addUser = createAsyncThunk("users/addUser", async (user: User, { re
         }
 
         const responseData = await response.json();
-        window.location.reload();
 
         return responseData.payload.data;
     } catch (err) {
@@ -89,12 +88,7 @@ export const updateUser = createAsyncThunk("users/updateUser", async (user: User
         if (!response.ok) {
             throw new Error("Failed to update user");
         }
-
-        const responseData = await response.json();
-        loginUser(responseData);
-        window.location.reload();
-
-        return responseData.payload.data;
+        return user;
     } catch (err) {
         return rejectWithValue((err as Error).message);
     }
@@ -109,8 +103,6 @@ export const deleteUser = createAsyncThunk("users/deleteUser", async (userId: st
         if (!response.ok) {
             throw new Error("Failed to delete user");
         }
-
-        window.location.reload();
 
         return userId;
     } catch (err) {
@@ -168,6 +160,16 @@ export const usersSlice = createSlice({
     extraReducers: (builder) => {
         builder.addCase(fetchUsers.fulfilled, (state, action) => {
             state.users = action.payload;
+        });
+        builder.addCase(updateUser.fulfilled, (state, action) => {
+            loginUser(action.payload);
+            const updatedUser = action.payload;
+            state.users = state.users.map((user) => {
+                if (user.id === updatedUser.id) {
+                    return { ...user, ...updatedUser };
+                }
+                return user;
+            });
         });
     },
 });

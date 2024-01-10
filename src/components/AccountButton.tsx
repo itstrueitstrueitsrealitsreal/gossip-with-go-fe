@@ -200,6 +200,7 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
 
         // Update the user in the Redux store
         dispatch(updateUser(updatedUser));
+        dispatch(loginUser(updatedUser));
 
         // Reset change username field
         setChangeUsername("");
@@ -233,6 +234,7 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
         };
         // Update the user in the Redux store
         dispatch(updateUser(updatedUser));
+        dispatch(loginUser(updatedUser));
 
         // Reset change password field
         setChangePassword("");
