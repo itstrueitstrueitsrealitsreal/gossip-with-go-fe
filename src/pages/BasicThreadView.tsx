@@ -1,5 +1,5 @@
 import Comment from "../types/Comment";
-import { selectComments, addComment, editComment, deleteComment } from "../redux/slices/commentSlice";
+import { selectComments, addComment, editComment, deleteComment, fetchComments } from "../redux/slices/commentSlice";
 import { deleteThread, selectThreadById, selectThreads } from "../redux/slices/threadSlice";
 import ThreadItem from "../components/ThreadItem";
 import { RootState } from "../redux/store"; // Import RootState type
@@ -22,8 +22,12 @@ import {
     CardContent,
 } from "@mui/material";
 import { Link, useParams } from "react-router-dom";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+// eslint-disable-next-line import/named
+import { AnyAction } from "redux";
+// eslint-disable-next-line import/named
+import { ThunkDispatch } from "redux-thunk";
 
 declare module "@mui/material/styles" {
     interface PaletteOptions {
@@ -153,7 +157,11 @@ const BasicThreadView: React.FC = () => {
         setEditCommentId("");
     };
 
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<ThunkDispatch<RootState, undefined, AnyAction>>();
+
+    useEffect(() => {
+        dispatch(fetchComments(id ?? ""));
+    }, [dispatch]);
 
     const [error, setError] = useState<string>("");
 
@@ -165,7 +173,8 @@ const BasicThreadView: React.FC = () => {
 
         const newComment: Comment = {
             id: generateId(),
-            body: inputComment,
+            threadId: id ?? "",
+            content: inputComment,
             author: user?.username ?? "",
             timestamp: new Date(),
         };
@@ -184,7 +193,8 @@ const BasicThreadView: React.FC = () => {
 
         const editedComment: Comment = {
             id: editCommentId,
-            body: editCommentBody,
+            threadId: id ?? "",
+            content: editCommentBody,
             author: user?.username ?? "Anonymous",
             timestamp: new Date(),
         };
@@ -315,7 +325,7 @@ const BasicThreadView: React.FC = () => {
                                 comment={comment}
                                 loggedIn={isLoggedIn}
                                 onDelete={() => handleDeleteComment(comment.id)}
-                                onEdit={() => handleEditButtonClick(comment.id, comment.body)}
+                                onEdit={() => handleEditButtonClick(comment.id, comment.content)}
                             />
                         </li>
                     ))

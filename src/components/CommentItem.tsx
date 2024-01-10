@@ -79,7 +79,7 @@ const CommentItem: React.FC<Props> = ({ comment, onDelete, onEdit, loggedIn }) =
             <Card>
                 <CardContent>
                     <Typography variant="body2" color="textPrimary" component="p">
-                        {comment.body}
+                        {comment.content}
                     </Typography>
                     <Typography color="textSecondary" className={classes.metadata} gutterBottom>
                         {"Posted by " + comment.author + " on " + comment.timestamp.toLocaleString()}
