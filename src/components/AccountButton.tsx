@@ -136,6 +136,7 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
 
         // Perform registration logic here
         dispatch(addUser(user));
+        console.log(user);
 
         // Reset registration-related fields
         setRegisterUsername("");

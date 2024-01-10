@@ -53,18 +53,32 @@ const initialState: UsersState = {
     loggedInUser: null,
 };
 
+export const addUser = createAsyncThunk("users/addUser", async (user: User, { rejectWithValue }) => {
+    try {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/users`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(user),
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to add user");
+        }
+
+        const responseData = await response.json();
+
+        return responseData.payload.data;
+    } catch (err) {
+        return rejectWithValue((err as Error).message);
+    }
+});
+
 export const usersSlice = createSlice({
     name: "users",
     initialState,
     reducers: {
-        addUser: (state, action: PayloadAction<User>) => {
-            const existingUser = state.users.find((user) => user.username === action.payload.username);
-            if (existingUser) {
-                // Return an error informing the user that the username is already taken
-                throw new Error("Username is already taken");
-            }
-            state.users.push(action.payload);
-        },
         removeUser: (state, action: PayloadAction<string>) => {
             state.users = state.users.filter((user) => user.id !== action.payload);
         },
@@ -114,8 +128,7 @@ export const isUsernameTaken = (state: RootState, username: string): boolean => 
     return users.some((user) => user.username === username);
 };
 
-export const { addUser, removeUser, editUsername, editPassword, loginUser, logoutUser, deleteUser } =
-    usersSlice.actions;
+export const { removeUser, editUsername, editPassword, loginUser, logoutUser, deleteUser } = usersSlice.actions;
 
 export const selectUsers = (state: RootState) => state.users.users;
 
