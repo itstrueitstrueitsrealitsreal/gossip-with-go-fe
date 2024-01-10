@@ -46,7 +46,6 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
     const [changePasswordError, setChangePasswordError] = useState("");
     const dispatch = useDispatch<ThunkDispatch<RootState, undefined, AnyAction>>();
     const selectedUser = useSelector((state: RootState) => selectUser(state, loginUsername, loginPassword));
-    console.log(selectedUser);
     const isTaken = useSelector((state: RootState) => isUsernameTaken(state, registerUsername));
 
     useEffect(() => {

@@ -25,12 +25,26 @@ async function hashPassword(password: string | undefined) {
     return hashedPassword;
 }
 
-// Async thunk to fetch users from an API
-export const fetchUsers = createAsyncThunk("users/fetchUsers", async () => {
-    const response = await fetch(process.env.REACT_APP_API_URL + "/users");
-    const data = await response.json();
-    console.log("users: " + data.users);
-    return data.users;
+export const fetchUsers = createAsyncThunk("users/fetchUsers", async (_, { rejectWithValue }) => {
+    try {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/users`);
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch users");
+        }
+
+        const responseData = await response.json();
+
+        const users = responseData.payload.data.map((user: User) => ({
+            id: user.id,
+            username: user.username,
+            password: user.password,
+        }));
+
+        return users;
+    } catch (err) {
+        return rejectWithValue((err as Error).message);
+    }
 });
 
 const initialState: UsersState = {
@@ -113,9 +127,9 @@ export const selectUser = async (state: RootState, username: string, password: s
         return null;
     }
 
-    const users = state.users.users;
-
-    const matchingUser = users.find((user) => user.username === username && user.password === hashedPassword);
+    const matchingUser = state.users.users.find(
+        (user) => user.username === username && user.password === hashedPassword,
+    );
 
     return matchingUser || null;
 };
