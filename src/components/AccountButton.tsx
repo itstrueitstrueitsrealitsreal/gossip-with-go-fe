@@ -7,6 +7,7 @@ import {
     isUsernameTaken,
     deleteUser,
     fetchUsers,
+    updateUser,
 } from "../redux/slices/userSlice";
 import { RootState } from "../redux/store";
 import User from "../types/User";
@@ -99,9 +100,6 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
                 setOpen(false);
                 alert("Login successful.");
             } else {
-                console.log("username: ", loginUsername);
-                console.log("password: ", loginPassword);
-                console.log("user: ", user);
                 setLoginError("Invalid username or password.");
             }
         } catch (error) {
@@ -136,7 +134,6 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
 
         // Perform registration logic here
         dispatch(addUser(user));
-        console.log(user);
 
         // Reset registration-related fields
         setRegisterUsername("");
@@ -202,7 +199,7 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
         logoutUser();
 
         // Update the user in the Redux store
-        dispatch(loginUser(updatedUser));
+        dispatch(updateUser(updatedUser));
 
         // Reset change username field
         setChangeUsername("");
@@ -234,9 +231,8 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
             ...user,
             password: hashedPassword,
         };
-
         // Update the user in the Redux store
-        dispatch(loginUser(updatedUser));
+        dispatch(updateUser(updatedUser));
 
         // Reset change password field
         setChangePassword("");

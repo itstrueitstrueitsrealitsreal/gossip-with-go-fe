@@ -68,8 +68,51 @@ export const addUser = createAsyncThunk("users/addUser", async (user: User, { re
         }
 
         const responseData = await response.json();
+        window.location.reload();
 
         return responseData.payload.data;
+    } catch (err) {
+        return rejectWithValue((err as Error).message);
+    }
+});
+
+export const updateUser = createAsyncThunk("users/updateUser", async (user: User, { rejectWithValue }) => {
+    try {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/users/${user.id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(user),
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to update user");
+        }
+
+        const responseData = await response.json();
+        loginUser(responseData);
+        window.location.reload();
+
+        return responseData.payload.data;
+    } catch (err) {
+        return rejectWithValue((err as Error).message);
+    }
+});
+
+export const deleteUser = createAsyncThunk("users/deleteUser", async (userId: string, { rejectWithValue }) => {
+    try {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/users/${userId}`, {
+            method: "DELETE",
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to delete user");
+        }
+
+        window.location.reload();
+
+        return userId;
     } catch (err) {
         return rejectWithValue((err as Error).message);
     }
@@ -91,6 +134,7 @@ export const usersSlice = createSlice({
                     throw new Error("Username is already taken");
                 }
                 user.username = action.payload.newUsername;
+                updateUser(user);
             }
         },
         editPassword: (state, action: PayloadAction<{ id: string; newPassword: string }>) => {
@@ -99,6 +143,7 @@ export const usersSlice = createSlice({
                 // Hash the new password asynchronously
                 hashPassword(action.payload.newPassword).then((hashedPassword) => {
                     user.password = hashedPassword;
+                    updateUser(user);
                 });
             }
         },
@@ -110,9 +155,6 @@ export const usersSlice = createSlice({
         logoutUser: (state) => {
             state.isLoggedIn = false;
             state.loggedInUser = null;
-        },
-        deleteUser: (state, action: PayloadAction<string>) => {
-            state.users = state.users.filter((user) => user.id !== action.payload);
         },
     },
     extraReducers: (builder) => {
@@ -128,7 +170,7 @@ export const isUsernameTaken = (state: RootState, username: string): boolean => 
     return users.some((user) => user.username === username);
 };
 
-export const { removeUser, editUsername, editPassword, loginUser, logoutUser, deleteUser } = usersSlice.actions;
+export const { removeUser, editUsername, editPassword, loginUser, logoutUser } = usersSlice.actions;
 
 export const selectUsers = (state: RootState) => state.users.users;
 
