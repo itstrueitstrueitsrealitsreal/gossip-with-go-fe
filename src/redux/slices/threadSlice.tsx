@@ -26,9 +26,7 @@ export const addThread = createAsyncThunk("threads/addThread", async (newThread:
     if (!response.ok) {
         throw new Error("Failed to add thread");
     }
-
-    const responseData = await response.json();
-    return responseData.payload.data;
+    return newThread;
 });
 
 // Define the thunk to edit a thread
@@ -44,9 +42,7 @@ export const editThread = createAsyncThunk("threads/editThread", async (editedTh
     if (!response.ok) {
         throw new Error("Failed to edit thread");
     }
-
-    const responseData = await response.json();
-    return responseData.payload.data;
+    return editedThread;
 });
 
 // Define the thunk to delete a thread
@@ -76,25 +72,7 @@ const initialState: ThreadsState = {
 export const threadSlice = createSlice({
     name: "threads",
     initialState,
-    reducers: {
-        // These are the actions related to the local state
-        addThread: (state, action: PayloadAction<Thread>) => {
-            state.threads.push(action.payload);
-        },
-        editThread: (state, action: PayloadAction<Thread>) => {
-            const { id, ...updatedThread } = action.payload;
-            const threadIndex = state.threads.findIndex((thread) => thread.id === id);
-            if (threadIndex !== -1) {
-                state.threads[threadIndex] = { ...state.threads[threadIndex], ...updatedThread };
-            }
-        },
-        deleteThread: (state, action: PayloadAction<string>) => {
-            const threadIndex = state.threads.findIndex((thread) => thread.id === action.payload);
-            if (threadIndex !== -1) {
-                state.threads.splice(threadIndex, 1);
-            }
-        },
-    },
+    reducers: {},
     extraReducers: (builder) => {
         builder
             .addCase(fetchThreads.pending, (state) => {
@@ -107,6 +85,22 @@ export const threadSlice = createSlice({
             .addCase(fetchThreads.rejected, (state, action) => {
                 state.status = "failed";
                 state.error = action.payload?.toString() ?? "Unknown error";
+            })
+            .addCase(addThread.fulfilled, (state, action: PayloadAction<Thread>) => {
+                state.threads.push(action.payload);
+            })
+            .addCase(editThread.fulfilled, (state, action: PayloadAction<Thread>) => {
+                const { id, ...updatedThread } = action.payload;
+                const threadIndex = state.threads.findIndex((thread) => thread.id === id);
+                if (threadIndex !== -1) {
+                    state.threads[threadIndex] = { ...state.threads[threadIndex], ...updatedThread };
+                }
+            })
+            .addCase(deleteThread.fulfilled, (state, action: PayloadAction<string>) => {
+                const threadIndex = state.threads.findIndex((thread) => thread.id === action.payload);
+                if (threadIndex !== -1) {
+                    state.threads.splice(threadIndex, 1);
+                }
             });
     },
 });
