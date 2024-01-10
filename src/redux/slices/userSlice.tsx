@@ -118,6 +118,14 @@ export const deleteUser = createAsyncThunk("users/deleteUser", async (userId: st
     }
 });
 
+export const getUserById = (state: RootState, userId: string): User | null => {
+    const users = state.users.users;
+    if (users) {
+        return users.find((user) => user.id === userId) || null;
+    }
+    return null;
+};
+
 export const usersSlice = createSlice({
     name: "users",
     initialState,

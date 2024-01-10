@@ -24,6 +24,11 @@ export const fetchTags = createAsyncThunk("tags/fetchTags", async (_, { rejectWi
     }
 });
 
+// Get tag by id
+export const getTagById = (state: RootState, tagId: string): Tag | undefined => {
+    return state.tags.tags.find((tag) => tag.id === tagId);
+};
+
 // Other synchronous action creators
 export const addTag = (tag: Tag) => {
     return { type: "tags/addTag", payload: tag };
