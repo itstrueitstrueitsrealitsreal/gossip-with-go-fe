@@ -1,6 +1,6 @@
 type Comment = {
     id: string;
-    threadId: string;
+    thread_id: string;
     content: string;
     author: string;
     timestamp: Date;

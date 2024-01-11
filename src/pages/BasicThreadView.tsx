@@ -173,7 +173,7 @@ const BasicThreadView: React.FC = () => {
 
         const newComment: Comment = {
             id: generateId(),
-            threadId: id ?? "",
+            thread_id: id ?? "",
             content: inputComment,
             author: user?.username ?? "",
             timestamp: new Date(),
@@ -193,7 +193,7 @@ const BasicThreadView: React.FC = () => {
 
         const editedComment: Comment = {
             id: editCommentId,
-            threadId: id ?? "",
+            thread_id: id ?? "",
             content: editCommentBody,
             author: user?.username ?? "Anonymous",
             timestamp: new Date(),
