@@ -1,7 +1,7 @@
 /* App.css */
 
 body {
-    background-image: url("../img/background.jpg"); /* Replace with your image file name */
+    background-image: url("../public/images/background.jpg"); /* Replace with your image file name */
     background-repeat: no-repeat;
     background-size: cover;
     opacity: 0.9;

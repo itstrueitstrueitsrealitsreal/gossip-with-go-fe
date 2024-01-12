@@ -1,14 +1,28 @@
-# CVWO Assignment Sample React App
+# Gossip with Go 
 
-This sample React app is provided to help you experiment and practice web development fundamentals.
-It shows how certain functionality can be implemented.
-However, do note that this is **far from a model example**.
-After all, we want to see how you maximise your learning in web development
-and good software development practices.
+This is a web forum application which is developed with a Go backend using the Go-Chi framework and a React frontend, and
+this is the repository for the frontend. The repository for the backend can be found [here](https://github.com/itstrueitstrueitsrealitsreal/gossip-with-go-be).
+
 
 ## Getting Started
 
-### Running the app
+### User Guide
+1. The web application is accessible at https://gossip-with-go.vercel.app/, and the user can browse threads without logging in.
+Sample threads and posts have been created to simulate a populated forum. 
+
+2. The landing page consists of a list of all the threads, preceded by a component which allows you to filter the threads by tag by using the dropdown menu.
+Clicking on the threads will lead to a page with the comments associated with the thread. 
+
+3. The user needs to login or register to create new threads or comments using the dialog which is rendered when clicking the account button.
+
+4. Once the user is logged in, the account button now opens a dialog which allows the user to change their username or password.
+
+5. The user now has the option to create new threads or comments by clicking the new thread button while viewing the list of threads or clicking the new comment button while viewing the specific thread respectively.
+
+6. If the user is logged in and is the original poster of the comment or thread they are viewing, they will also have the option to edit or delete their thread or comment.
+
+
+### Running the app locally
 
 1. [Fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo#forking-a-repository) this repo.
 2. [Clone](https://docs.github.com/en/get-started/quickstart/fork-a-repo#cloning-your-forked-repository) **your** forked repo.
@@ -35,14 +49,14 @@ This is the main file structure
 
 ```
 .
+├── README.md
+├── build
 ├── node_modules
+├── package.json
 ├── public
 ├── src
-├── README.md
 ├── tsconfig.json
-├── package.json
-├── .eslintrc.js
-├── .prettierrc.js
+├── yarn-error.log
 └── yarn.lock
 ```
 
@@ -54,13 +68,10 @@ Main directories/files to note:
 -   `.eslintrc.js` contains the configuration for ESLint. ESLint is a tool to help enforce code consistency.
 -   `.prettierrc.js` contains the configuration for Prettier. Prettier is a tool to help format code.
 
-Try changing some source code and see how the app changes.
-
 ## Additional Notes
 
 -   This project uses [Typescript](https://www.typescriptlang.org/).
 -   The linting and code formatting rules are specified in `.eslintrc.js` and `.prettierrc.js` respectively.
-    You may modify the rules.
 -   The available scripts are in `package.json`.
     Here are some scripts that you are likely to use more often:
     -   `yarn start`
