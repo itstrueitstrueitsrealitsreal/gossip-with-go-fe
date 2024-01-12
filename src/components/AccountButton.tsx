@@ -53,6 +53,17 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
         dispatch(fetchUsers());
     }, [dispatch]);
 
+    useEffect(() => {
+        // Check if user data exists in localStorage
+        const userData = localStorage.getItem("userData");
+
+        if (userData) {
+            // Parse the user data and dispatch loginUser action
+            const parsedUserData = JSON.parse(userData);
+            dispatch(loginUser(parsedUserData));
+        }
+    }, [dispatch]);
+
     const handleOpen = () => {
         setOpen(true);
     };
@@ -88,12 +99,14 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
         }
 
         try {
-            // Wait for the Promise to resolve and get the user
             const user = await selectedUser;
 
             if (user) {
-                // Login successful, perform necessary actions
-                dispatch(loginUser(user)); // Dispatch loginUser action
+                dispatch(loginUser(user));
+
+                // Save user data to localStorage
+                localStorage.setItem("userData", JSON.stringify(user));
+
                 setLoginUsername("");
                 setLoginPassword("");
                 setLoginError("");
@@ -151,6 +164,7 @@ const AccountButton: React.FC<AccountButtonProps> = ({ isLoggedIn, user }) => {
     const handleLogout = () => {
         // Perform logout logic here
         dispatch(logoutUser()); // Dispatch logoutUser action
+        localStorage.removeItem("userData");
         setLoginUsername("");
         setLoginPassword("");
         alert("Logout successful.");
