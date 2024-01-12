@@ -330,7 +330,6 @@ const BasicThreadView: React.FC = () => {
                         </li>
                     ))
                 )}
-                {/* <BasicCommentList comments={comments} onEdit={() => handleEditButtonClick(comment.id, comment.body)} /> */}
                 <ThemeProvider theme={theme}>
                     <Button
                         variant="contained"
